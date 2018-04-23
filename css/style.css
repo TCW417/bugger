@@ -59,6 +59,10 @@ header div {
   margin: auto;
 }
 
+h2#scoreheader {
+  color: white;
+}
+
 fieldset#newTop {
   display: block;
   /* width: 20em; */
