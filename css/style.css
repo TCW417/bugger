@@ -34,16 +34,21 @@ body {
   font-size: 22px;
 }
 
-header {
+header{
+  display: block;
   width: 100%;
   height: 6em;
-  background-color: rgb(61, 109, 33)
+  background-color: rgb(61, 109, 33);
 }
 
-header a {
-  display: inline-block;
+header div {
   text-align: center;
   margin: auto;
+}
+header a {
+  /* display: inline-block; */
+  /* text-align: center; */
+  /* margin: auto; */
 }
 
 main {
@@ -52,6 +57,33 @@ main {
   margin: auto;
 }
 
+main div {
+  width: 40em;
+  margin: 0em auto;
+}
+ul#landing-menu {
+  margin: 1em auto;
+}
+
+ul#landing-menu li {
+  list-style: none;
+  text-align: center;
+  margin: 1em auto;
+  color: black;
+}
+
+ul#landing-menu button {
+  font-size: 300%;
+  width: 7em;
+  height: 2em;
+  color: black;
+  border: 4px solid black;
+  border-radius: 15px;
+}
+ul#landing-menu li a {
+  text-decoration: none;
+  color: black;
+}
 #monitor {
   width: 40em;
   height: 34em;
@@ -92,13 +124,13 @@ footer li {
   font-size: 130%;
 }
 
-li a {
+footer li a {
   color: white;
   padding: .5em;
   text-decoration: none;
 }
 
-li a:hover {
+footer ul li a:hover {
   background-color: rgba(38, 65, 22, 0.979);
 }
 
