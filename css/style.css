@@ -37,18 +37,21 @@ h4 {
   top: 0px;
   padding-top: 20px;
 }
-
-
 body {
   width: 100%;
   font-size: 22px;
+  background-attachment: fixed;
+  background-image: url('../assets/retrowave_background_by_hayny-dar38p1.png');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  
 }
 
 header{
   display: block;
   width: 100%;
+  background: linear-gradient( #9600ff, #00fff9);
   height: 7em;
-  background-color: rgb(61, 109, 33);
 }
 
 header div {
@@ -128,7 +131,7 @@ footer {
   display: block;
   width: 100%;
   height: 8em;
-  background-color: rgb(61, 109, 33);
+  background: linear-gradient( #9600ff, #00fff9);
   font-family: 'Jua', sans-serif
 }
 
@@ -158,4 +161,28 @@ footer p {
   color: white;
   text-align: center;
   padding-top: 8em;
+}
+#howToh2 {
+  background-color: #4900ff;opacity: .6;
+  text-align: center;
+  line-height: 1.5em;
+  border: 6px inset #ff00c1;
+  text-decoration: underline;
+  color: #00fff9;
+
+}
+
+#howToPlay p {
+  color: blue;
+  margin: 2em;
+  background-color: #ff00c1;opacity: .9;
+  border-radius: 6px;
+  text-align: center;
+  padding: 20px;
+  background-size: auto;
+}
+#howToPlay p:last-child {
+  width: 300px;
+  margin: auto;
+  margin-bottom: 2em;
 }
