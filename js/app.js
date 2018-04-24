@@ -7,18 +7,20 @@ Bugger.TopPlayer = function(player, score) {
   this.score = score;
 };
 
-Bugger.topScores = [
-  new Bugger.TopPlayer('Tom', 1000),
-  new Bugger.TopPlayer('Mom', 500),
-  new Bugger.TopPlayer('Allie', 0),
-  new Bugger.TopPlayer('Michele', 0),
-  new Bugger.TopPlayer('Tracy', 500),
-  new Bugger.TopPlayer('Andrew', 690),
-  new Bugger.TopPlayer('Justin', 650),
-  new Bugger.TopPlayer('Cameron', 200),
-  new Bugger.TopPlayer('Cat', 100),
-  new Bugger.TopPlayer('Tracy', 900)
-];
+Bugger.restoreTopTenTableData = function() {
+  var top10 = JSON.parse(localStorage.getItem('topScores')) ||
+  [new Bugger.TopPlayer('Tom', 1000),
+    new Bugger.TopPlayer('Mom', 500),
+    new Bugger.TopPlayer('Allie', 0),
+    new Bugger.TopPlayer('Michele', 0),
+    new Bugger.TopPlayer('Tracy', 500),
+    new Bugger.TopPlayer('Andrew', 690),
+    new Bugger.TopPlayer('Justin', 650),
+    new Bugger.TopPlayer('Cameron', 200),
+    new Bugger.TopPlayer('Cat', 100),
+    new Bugger.TopPlayer('Tracy', 900)];
+  return Bugger.sortObjArrayOnKey(top10, 'score', false);
+};
 
 Bugger.sortObjArrayOnKey = function(objArray, keyName, accending) {
   // This is a standard bubble sort
@@ -43,155 +45,17 @@ Bugger.sortObjArrayOnKey = function(objArray, keyName, accending) {
   return rtnArray;
 };
 
-// Clear content from Top 10 Scores Table
-Bugger.clearTopTenTable = function() {
-  // replace existing tbody and thead in table with new, blank elements
-  var divEl = document.getElementById('scoreTableDiv');
-  divEl.innerHTML = '';
-};
-
-Bugger.renderTopTenTable = function() {
-  var divEl = document.getElementById('scoreTableDiv');
-  var tableEl = document.createElement('table');
-  for (var s of Bugger.topScores) {
-    var trEl = document.createElement('tr');
-    var tdEl = document.createElement('td');
-    tdEl.textContent = s.player;
-    trEl.appendChild(tdEl);
-    tdEl = document.createElement('td');
-    tdEl.textContent = s.score;
-    trEl.appendChild(tdEl);
-    tableEl.appendChild(trEl);
-  }
-  divEl.appendChild(tableEl);
-};
-
+// test score against top ten scores table
 Bugger.scoreIsTopTen = function(score) {
-  Bugger.topScores = JSON.parse(localStorage.topScores);
+  Bugger.topScores = Bugger.restoreTopTenTableData();
   return score >= Bugger.topScores[Bugger.topScores.length-1].score;
 };
 
-Bugger.addTopTenScore = function(player, score) {
-  Bugger.topScores = JSON.parse(localStorage.topScores);
-  Bugger.topScores.push({player, score});
-  Bugger.topScores = Bugger.sortObjArrayOnKey(Bugger.topScores,'score',false);
-  Bugger.topScores.pop();
-  localStorage.topScores = JSON.stringify(Bugger.topScores);
+Bugger.loadNewPage = function(pageName){
+  //get current location
+  var url = window.location.href;
+  var lastSlash = url.lastIndexOf('/');
+  url = url.slice(0, lastSlash+1) + pageName;
+  console.log(url);
+  window.location.href = url;
 };
-
-console.log('pre sort',Bugger.topScores);
-Bugger.topScores = Bugger.sortObjArrayOnKey(Bugger.topScores,'score', false);
-console.log('post sort', Bugger.topScores);
-
-localStorage.setItem('MyName','Tracy');
-// localStorage.topScores = JSON.stringify(Bugger.topScores);
-localStorage.setItem('topScores', JSON.stringify(Bugger.topScores));
-
-var testArray = JSON.parse(localStorage.getItem('topScores'));
-console.log(testArray);
-console.log(localStorage.MyName);
-
-// Bugger.clearTopTenTable();
-// Bugger.renderTopTenTable();
-
-console.log('test 50',Bugger.scoreIsTopTen(50));
-Bugger.addTopTenScore('Freddy', 50);
-console.log('after adding Freddy',Bugger.topScores);
-
-//Variables
-var BUG_VELOCITY = 44;
-var canvas = document.getElementById('myCanvas');
-var ctx = canvas.getContext('2d');
-
-/**
- * BUG
- */
-function Bug() {
-  this.image = new Image();
-  this.image.src = "http://via.placeholder.com/44x44";
-  this.width = 44;
-  this.height = 44;
-  this.xPos = (canvas.width/2)-(this.width/2);
-  this.yPos = canvas.height-45;
-}
-
-Bug.prototype.drawBug = function() {
-  ctx.drawImage(this.image, this.xPos, this.yPos);
-};
-
-Bug.prototype.clearBug = function() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-};
-
-Bug.prototype.moveBug = function(event) {
-  this.clearBug();
-  if(event.keyCode == "119" && this.yPos > 0) {
-    this.yPos -= BUG_VELOCITY;
-  }
-  if(event.keyCode == "97" && this.xPos > 0) {
-    this.xPos -= BUG_VELOCITY;
-  }
-  if(event.keyCode == "100" && this.xPos < (canvas.width - this.width)){
-    this.xPos += BUG_VELOCITY;
-  }
-  if(event.keyCode == "115" && this.yPos < (canvas.height - 45)) {
-    this.yPos += BUG_VELOCITY;
-  }
-  this.drawBug();
-};
-
-
-
-
-
-
-
-
-
-
-/**
- * OBSTACLES
- */
-var obstacles = {
-  0: '1001',
-  1: '011101',
-  2: '101110011',
-  3: '11000111010100',
-  4: '0110110011010011001101101'
-}
-
-var allObstacles = []; //Holds all obstacles on screen
-
-function Obstacle() {
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * LOGIC
- */
-var player = new Bug();
-player.drawBug();
-window.addEventListener('keypress', function(event) {
-  player.moveBug(event);
-});
