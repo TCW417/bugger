@@ -16,7 +16,6 @@ header a {
 
 main {
   width: 56em;
-  height: 48em;
   margin: auto;
 }
 
@@ -32,8 +31,6 @@ main {
 
 #monitor canvas {
   display: block;
-  width: 34em;
-  height: 24em;
   margin-top: 4em;
   margin: auto;
   background-color: rgb(37, 37, 37);
