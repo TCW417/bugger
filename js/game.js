@@ -15,6 +15,7 @@ function Bug() {
   this.height = 40;
   this.xPos = (canvas.width/2)-(this.width);
   this.yPos = canvas.height- this.height;
+  this.rightSide = this.xPos + this.width; // this is right side; left side is xPos
 }
 
 Bug.prototype.bugRowNum = function() {
@@ -43,8 +44,9 @@ Bug.prototype.moveBug = function(event) {
   if(event.keyCode == '115' && this.yPos < (canvas.height - 45)) {
     this.yPos += BUG_VELOCITY;
   }
+  this.rightSide = this.xPos + this.width;
   this.drawBug();
-  console.log('The bug is on row ',this.bugRowNum());
+  // console.log('The bug is on row ',this.bugRowNum());
 };
 
 /**
@@ -62,11 +64,16 @@ function Obstacle(src, h, w, startRow, movesRight) {
   } else {
     this.xPos = canvas.width;
   }
+  this.startXpos = this.xPos;
   this.yPos = (startRow * 40) + 40;
-  // this.velocity = (movesRight ? 40 : -40);
-  this.velocity = (movesRight ? 3 : -3);
-
+  this.rightSide = this.xPos + this.width;
+  var v = this.randomVelocity();
+  this.velocity = (movesRight ? v : -v);
 }
+
+Obstacle.prototype.randomVelocity = function() {
+  return Math.ceil(Math.random()*5);
+};
 
 Obstacle.prototype.drawObstacle = function() {
   ctx.drawImage(this.image, this.xPos, this.yPos);
@@ -74,6 +81,13 @@ Obstacle.prototype.drawObstacle = function() {
 
 Obstacle.prototype.moveObstacle = function() {
   this.xPos += this.velocity;
+  this.rightSide = this.xPos + this.width;
+  if(this.xPos >canvas.width||this.rightSide<0) {
+    this.xPos = this.startXpos;
+    var v = this.randomVelocity();
+    this.velocity = (this.movesRight ? v : -v);
+  }
+  this.drawObstacle();
 };
 
 var obstacles = {
@@ -87,7 +101,6 @@ var obstacles = {
 var allObstacles = []; //Holds all obstacles on screen
 for (var i = 0; i < 10; i++) {
   allObstacles.push(new Obstacle('assets/binary-9.png', 39, 246, i, !!(i%2)));
-
 }
 
 // allObstacles.push(new Obstacle('assets/binary-9.png', 39, 246, 1, true));
@@ -109,9 +122,17 @@ window.onload = function() {
 function detectCollision() {
   var bugRow = player.bugRowNum();
 
-  if (allObstacles[bugRow - 1] ) {
-    console.log('Same row!');
-    return true;
+  //oi = obstacle index
+  var oi = bugRow-1;
+  if (allObstacles[oi]) {
+    var impactLeft = player.xPos >= allObstacles[oi].xPos && player.xPos <= allObstacles[oi].rightSide;
+    var impactRight = player.rightSide >= allObstacles[oi].xPos && player.rightSide <= allObstacles[oi].rightSide;
+    //if we get a valid row number, then we evaluate below if statement
+    if (impactLeft||impactRight) {
+      console.log('Impact!');
+      // console.log('Same row!');
+      return true;
+    }
   }
   return false;
 }
@@ -121,11 +142,12 @@ function detectCollision() {
 function drawObstacles(e){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (var obj of allObstacles) {
-    // ctx.clearRect(0, 0, canvas.width, canvas.height);
     obj.moveObstacle();
-    obj.drawObstacle();
+    // obj.drawObstacle();
     player.drawBug();
-    if (detectCollision()) console.log('Game over');
+    if (detectCollision()) {
+
+    }
   }
 }
 
