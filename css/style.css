@@ -23,7 +23,7 @@ h2 {
 
 h4 {
   font-family: 'Audiowide', cursive;
-  color: #9600ff;
+  color: #00fff9;
   text-transform: uppercase;
   font-size: 40px;
 }
@@ -65,7 +65,7 @@ body {
 header{
   display: block;
   width: 100%;
-  background: linear-gradient( #9600ff, #00fff9);
+  background: linear-gradient(#00fff9, #9600ff);
   height: 7em;
 }
 
@@ -79,6 +79,7 @@ header div a {
   text-transform: uppercase;
   color: linear-gradient(#ff00c1, #00fff9);
   line-height: 100px;
+  text-shadow: 3px 3px 5px #ff00c1;
   text-decoration: none;
 }
 
@@ -95,12 +96,16 @@ fieldset#newTop {
 fieldset#newTop label, fieldset#newTop button, fieldset#newTop input {
   font-size: 1.5em;
 }
+fieldset#newTop p {
+  color: #00fff9;
+}
 fieldset#newTop button {
   margin: 20px auto;
   border: 4px solid black;
   border-radius: 10px;
   background-color: #ff00c1;opacity: .9;
   color: blue;
+  margin-top: 65px;
 }
 fieldset#newTop input {
   background-color: #ff00c1;opacity: .9;
@@ -113,7 +118,12 @@ main {
   width: 56em;
   margin: auto;
 }
-
+#urScore {
+  color: #00fff9;
+  height: 100px;
+  font-size: 40px;
+  text-align: center;
+}
 main div {
   width: 40em;
   margin: 0em auto;
@@ -131,11 +141,15 @@ ul#landing-menu li {
 
 ul#landing-menu button {
   font-size: 300%;
-  width: 7em;
+  width: 7.5em;
   height: 2em;
   color: black;
   border: 4px solid black;
   border-radius: 15px;
+}
+ul#landing-menu button:hover {
+  background-color: #00fff9;
+  text-shadow: 3px 3px 5px #ff00c1;
 }
 ul#landing-menu li a {
   text-decoration: none;
@@ -155,7 +169,7 @@ table tr {
 }
 
 table tr td{
-  background-color: #4900ff;
+  background-color: #4900ff;opacity: .8;
   color: white;
   border-radius: 25px;
   margin-right: 10px;
@@ -163,21 +177,21 @@ table tr td{
   padding: 10px;
 }
 
-#monitor {
-  width: 40em;
-  height: 34em;
-  padding-top: 4em;
+#container {
+  position: relative;
+  width: 65em;
   margin: auto;
-  margin-top: 4em;
-  background-color: rgb(177, 176, 142);
-  border-radius: 10px;
+}
+#monitor {
+  width: 1250px;
+  margin: auto;
 }
 
-#monitor canvas {
-  display: block;
-  margin-top: 4em;
-  margin: auto;
-  background-color: rgb(37, 37, 37);
+#myCanvas {
+  position: absolute;
+  left: 310px;
+  top: 110px;
+  background: linear-gradient(90deg, rgb(20, 20, 20) 5%, rgb(40, 40, 40) 10%, rgb(59, 59, 59) 40%, rgba(40, 40, 40) 90%, rgb(20, 20, 20) 95%);
   border-radius: 10px;
 }
 
@@ -208,7 +222,7 @@ footer li a {
 }
 
 footer ul li a:hover {
-  background-color: rgba(38, 65, 22, 0.979);
+  background-color: #00fff9;
 }
 
 footer p {
@@ -216,13 +230,14 @@ footer p {
   text-align: center;
   padding-top: 8em;
 }
+
 #howToh2 {
   background-color: #4900ff;opacity: .6;
   text-align: center;
   line-height: 1.5em;
   border: 6px inset #ff00c1;
   color: #00fff9;
-  margin: auto; asdfsa
+  margin: auto;
   width: 700px;
   margin-top: 60px;
 }
