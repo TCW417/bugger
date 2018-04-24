@@ -155,13 +155,14 @@ table tr {
 }
 
 table tr td{
-  background-color: #4900ff;
+  background-color: #4900ff;opacity: .8;
   color: white;
   border-radius: 25px;
   margin-right: 10px;
   text-align: center;
   padding: 10px;
 }
+
 #container {
   position: relative;
   width: 65em;
