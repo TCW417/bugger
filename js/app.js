@@ -7,7 +7,7 @@ Bugger.TopPlayer = function(player, score) {
   this.score = score;
 };
 
-Bugger.restoreTopTenTable = function() {
+Bugger.restoreTopTenTableData = function() {
   var top10 = JSON.parse(localStorage.getItem('topScores')) ||
   [new Bugger.TopPlayer('Tom', 1000),
     new Bugger.TopPlayer('Mom', 500),
@@ -45,58 +45,17 @@ Bugger.sortObjArrayOnKey = function(objArray, keyName, accending) {
   return rtnArray;
 };
 
-// Clear content from Top 10 Scores Table
-Bugger.clearTopTenTable = function() {
-  // replace existing tbody and thead in table with new, blank elements
-  var divEl = document.getElementById('scoreTableDiv');
-  divEl.innerHTML = '';
-};
-
-Bugger.renderTopTenTable = function() {
-  var divEl = document.getElementById('scoreTableDiv');
-  var tableEl = document.createElement('table');
-  for (var s of Bugger.topScores) {
-    var trEl = document.createElement('tr');
-    var tdEl = document.createElement('td');
-    tdEl.textContent = s.player;
-    trEl.appendChild(tdEl);
-    tdEl = document.createElement('td');
-    tdEl.textContent = s.score;
-    trEl.appendChild(tdEl);
-    tableEl.appendChild(trEl);
-  }
-  divEl.appendChild(tableEl);
-};
-
+// test score against top ten scores table
 Bugger.scoreIsTopTen = function(score) {
-  Bugger.topScores = JSON.parse(localStorage.topScores);
+  Bugger.topScores = Bugger.restoreTopTenTableData();
   return score >= Bugger.topScores[Bugger.topScores.length-1].score;
 };
 
-Bugger.addTopTenScore = function(player, score) {
-  Bugger.topScores = JSON.parse(localStorage.getItem('topScores')) || Bugger.restoreTopTenTable();
-  Bugger.topScores.push({player, score});
-  Bugger.topScores = Bugger.sortObjArrayOnKey(Bugger.topScores,'score',false);
-  Bugger.topScores.pop();
-  localStorage.topScores = JSON.stringify(Bugger.topScores);
+Bugger.loadNewPage = function(pageName){
+  //get current location
+  var url = window.location.href;
+  var lastSlash = url.lastIndexOf('/');
+  url = url.slice(0, lastSlash+1) + pageName;
+  console.log(url);
+  window.location.href = url;
 };
-
-
-console.log('pre sort',Bugger.topScores);
-Bugger.topScores = Bugger.sortObjArrayOnKey(Bugger.topScores,'score', false);
-console.log('post sort', Bugger.topScores);
-
-localStorage.setItem('MyName','Tracy');
-// localStorage.topScores = JSON.stringify(Bugger.topScores);
-localStorage.setItem('topScores', JSON.stringify(Bugger.topScores));
-
-var testArray = JSON.parse(localStorage.getItem('topScores'));
-console.log(testArray);
-console.log(localStorage.MyName);
-
-// Bugger.clearTopTenTable();
-// Bugger.renderTopTenTable();
-
-console.log('test 50',Bugger.scoreIsTopTen(50));
-Bugger.addTopTenScore('Freddy', 50);
-console.log('after adding Freddy',Bugger.topScores);
