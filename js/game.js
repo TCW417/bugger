@@ -59,6 +59,10 @@ function Obstacle() {
 
 }
 
+// Draw bug and game field on window load
+window.onload = function() {
+  player.drawBug();
+};
 
 
 
