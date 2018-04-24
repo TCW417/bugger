@@ -64,6 +64,10 @@ header div {
   margin: auto;
 }
 
+h2#scoreheader {
+  color: white;
+}
+
 fieldset#newTop {
   display: block;
   /* width: 20em; */
@@ -120,6 +124,28 @@ ul#landing-menu li a {
   text-decoration: none;
   color: black;
 }
+
+table {
+  margin: 15px auto;
+  font-family: 'Press Start 2P', cursive;
+  border-spacing: 10px;
+  border-collapse: separate;
+}
+
+table tr {
+  padding: 10px;
+
+}
+
+table tr td{
+  background-color: #4900ff;
+  color: white;
+  border-radius: 25px;
+  margin-right: 10px;
+  text-align: center;
+  padding: 10px;
+}
+
 #monitor {
   width: 40em;
   height: 34em;
