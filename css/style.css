@@ -110,8 +110,7 @@ fieldset#newTop input {
   border-radius: 10px;
 }
 main {
-  /* width: 56em; */
-  /* height: 48em; */
+  width: 56em;
   margin: auto;
 }
 
@@ -176,8 +175,6 @@ table tr td{
 
 #monitor canvas {
   display: block;
-  width: 34em;
-  height: 24em;
   margin-top: 4em;
   margin: auto;
   background-color: rgb(37, 37, 37);
