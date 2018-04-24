@@ -10,7 +10,7 @@ var ctx = canvas.getContext('2d');
  */
 function Bug() {
   this.image = new Image();
-  this.image.src = "assets/bug.png";
+  this.image.src = 'assets/bug.png';
   this.width = 40;
   this.height = 40;
   this.xPos = (canvas.width/2)-(this.width);
@@ -45,6 +45,29 @@ Bug.prototype.moveBug = function(event) {
 /**
  * OBSTACLES
  */
+function Obstacle(src, h, w, startRow, movesRight) {
+  this.image = new Image();
+  this.image.src = 'assets/binary-9.png';
+  this.width = w;
+  this.height = h;
+  this.movesRight = movesRight; // false if it moves left
+  if (this.movesRight) {
+    this.xPos =  -w; // put it off the left edge of screen
+  } else {
+    this.xPos = canvas.width + w;
+  }
+  this.yPos = canvas.height- this.height - startRow * 40;
+  this.velocity = (movesRight ? 40 : -40);
+}
+
+Obstacle.prototype.drawObstacle = function() {
+  ctx.drawImage(this.image, this.xPos, this.yPos);
+};
+
+Obstacle.prototype.moveObstacle = function() {
+  this.xPos += this.velocity;
+};
+
 var obstacles = {
   0: '1001',
   1: '011101',
@@ -55,16 +78,24 @@ var obstacles = {
 
 var allObstacles = []; //Holds all obstacles on screen
 
-function Obstacle() {
+allObstacles.push(new Obstacle('assets/binary-9.png', 39, 246, 1, true));
 
-}
 
 // Draw bug and game field on window load
 window.onload = function() {
   player.drawBug();
 };
 
+function drawObstacles(e){
+  for (var obj of allObstacles) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    obj.moveObstacle();
+    obj.drawObstacle();
+    player.drawBug();
+  }
+}
 
+var intervalID = window.setInterval(drawObstacles, 500);
 
 
 
