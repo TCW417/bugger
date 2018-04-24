@@ -129,7 +129,9 @@ function detectCollision() {
     var impactRight = player.rightSide >= allObstacles[oi].xPos && player.rightSide <= allObstacles[oi].rightSide;
     //if we get a valid row number, then we evaluate below if statement
     if (impactLeft||impactRight) {
-      console.log('Impact!');
+      window.clearInterval(Bug.intervalID);
+      console.log('Impact! player', player.xPos,player.rightSide,'obstacle', allObstacles[oi].xPos,allObstacles[oi].rightSide);
+
       // console.log('Same row!');
       return true;
     }
@@ -146,13 +148,18 @@ function drawObstacles(e){
     // obj.drawObstacle();
     player.drawBug();
     if (detectCollision()) {
-
+      gameOver();
     }
   }
 }
 
+function gameOver() {
+  // window.clearInterval(Bug.intervalID);
+  console.log('GAME OVER. YOU LOSE.');
+}
+
 // var intervalID = window.setInterval(drawObstacles, 500);
-var intervalID = window.setInterval(drawObstacles, 33);
+Bug.intervalID = window.setInterval(drawObstacles, 33);
 
 
 
