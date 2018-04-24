@@ -67,9 +67,13 @@ function Obstacle(src, h, w, startRow, movesRight) {
   this.startXpos = this.xPos;
   this.yPos = (startRow * 40) + 40;
   this.rightSide = this.xPos + this.width;
-  // this.velocity = (movesRight ? 40 : -40);
-  this.velocity = (movesRight ? 3 : -3);
+  var v = this.randomVelocity();
+  this.velocity = (movesRight ? v : -v);
 }
+
+Obstacle.prototype.randomVelocity = function() {
+  return Math.ceil(Math.random()*5);
+};
 
 Obstacle.prototype.drawObstacle = function() {
   ctx.drawImage(this.image, this.xPos, this.yPos);
@@ -80,6 +84,8 @@ Obstacle.prototype.moveObstacle = function() {
   this.rightSide = this.xPos + this.width;
   if(this.xPos >canvas.width||this.rightSide<0) {
     this.xPos = this.startXpos;
+    var v = this.randomVelocity();
+    this.velocity = (this.movesRight ? v : -v);
   }
   this.drawObstacle();
 };
@@ -95,7 +101,6 @@ var obstacles = {
 var allObstacles = []; //Holds all obstacles on screen
 for (var i = 0; i < 10; i++) {
   allObstacles.push(new Obstacle('assets/binary-9.png', 39, 246, i, !!(i%2)));
-
 }
 
 // allObstacles.push(new Obstacle('assets/binary-9.png', 39, 246, 1, true));
