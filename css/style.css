@@ -1,22 +1,166 @@
+
+h1, h2, h3, h4, label, button {
+
+  font-family: 'Audiowide', cursive;
+}
+
+p {
+  font-family: 'Audiowide', cursive;
+}
+
+h2 {
+  background-color: #4900ff;opacity: .6;
+  text-align: center;
+  line-height: 1.5em;
+  border: 6px inset #ff00c1;
+  color: #00fff9;
+  margin: auto;
+  width: 900px;
+  margin-top: 60px;
+  font-size: 40px;
+  margin-bottom: 20px;
+}
+
+h4 {
+  font-family: 'Audiowide', cursive;
+  color: #9600ff;
+  text-transform: uppercase;
+  font-size: 40px;
+}
+.bio {
+  display: block;
+  clear: both;
+  height: 330px;
+  padding-bottom: 30px;
+
+}
+.bio img {
+  display: block;
+  float: left;
+  margin: 20px 20px;
+  z-index: 10;
+}
+
+.bio p {
+  color: blue;
+  margin-top: 25px;
+  background-color: #ff00c1;opacity: .9;
+  border-radius: 6px;
+  text-align: center;
+  padding: 28px;
+  background-size: auto;
+  width: 450px;
+  float: right;
+}
 body {
   width: 100%;
   font-size: 22px;
+  background-attachment: fixed;
+  background-image: url('../assets/retrowave_background_by_hayny-dar38p1.png');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  
 }
 
-header {
+header{
+  display: block;
   width: 100%;
-  height: 5em;
-  background-color: rgb(61, 109, 33)
+  background: linear-gradient( #9600ff, #00fff9);
+  height: 7em;
 }
 
-header a {
-  display: inline-block;
+header div {
+  text-align: center;
   margin: auto;
 }
+header div a {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 60px;
+  text-transform: uppercase;
+  color: linear-gradient(#ff00c1, #00fff9);
+  line-height: 100px;
+  text-decoration: none;
+}
 
+h2#scoreheader {
+  color: white;
+}
+
+fieldset#newTop {
+  display: block;
+  /* width: 20em; */
+  margin: 0 auto;
+  text-align: center;
+}
+fieldset#newTop label, fieldset#newTop button, fieldset#newTop input {
+  font-size: 1.5em;
+}
+fieldset#newTop button {
+  margin: 20px auto;
+  border: 4px solid black;
+  border-radius: 10px;
+  background-color: #ff00c1;opacity: .9;
+  color: blue;
+}
+fieldset#newTop input {
+  background-color: #ff00c1;opacity: .9;
+  color: blue;
+  font-family: 'Jua', sans-serif;
+  border: 1px solid black;
+  border-radius: 10px;
+}
 main {
   width: 56em;
   margin: auto;
+}
+
+main div {
+  width: 40em;
+  margin: 0em auto;
+}
+ul#landing-menu {
+  margin: 1em auto;
+}
+
+ul#landing-menu li {
+  list-style: none;
+  text-align: center;
+  margin: 1em auto;
+  color: black;
+}
+
+ul#landing-menu button {
+  font-size: 300%;
+  width: 7em;
+  height: 2em;
+  color: black;
+  border: 4px solid black;
+  border-radius: 15px;
+}
+ul#landing-menu li a {
+  text-decoration: none;
+  color: black;
+}
+
+table {
+  margin: 15px auto;
+  font-family: 'Press Start 2P', cursive;
+  border-spacing: 10px;
+  border-collapse: separate;
+}
+
+table tr {
+  padding: 10px;
+
+}
+
+table tr td{
+  background-color: #4900ff;
+  color: white;
+  border-radius: 25px;
+  margin-right: 10px;
+  text-align: center;
+  padding: 10px;
 }
 
 #monitor {
@@ -38,28 +182,32 @@ main {
 }
 
 footer {
+  display: block;
   width: 100%;
-  height: 16em;
-  background-color: rgb(61, 109, 33);
+  height: 8em;
+  background: linear-gradient( #9600ff, #00fff9);
+  font-family: 'Audiowide', cursive;
 }
 
 footer ul {
-  width: 26em;
+  width: 100%;
   margin: auto;
+  text-align: center;
 }
 
 footer li {
-  padding-top: 5em;
+  padding-top: 2em;
   display: inline-block;
+  font-size: 130%;
 }
 
-li a {
-  color: white;
+footer li a {
+  color: #9600ff;
   padding: .5em;
   text-decoration: none;
 }
 
-li a:hover {
+footer ul li a:hover {
   background-color: rgba(38, 65, 22, 0.979);
 }
 
@@ -67,4 +215,29 @@ footer p {
   color: white;
   text-align: center;
   padding-top: 8em;
+}
+#howToh2 {
+  background-color: #4900ff;opacity: .6;
+  text-align: center;
+  line-height: 1.5em;
+  border: 6px inset #ff00c1;
+  color: #00fff9;
+  margin: auto; asdfsa
+  width: 700px;
+  margin-top: 60px;
+}
+
+#howToPlay p {
+  color: blue;
+  margin: 2em;
+  background-color: #ff00c1;opacity: .9;
+  border-radius: 6px;
+  text-align: center;
+  padding: 20px;
+  background-size: auto;
+}
+#howToPlay p:last-child {
+  width: 300px;
+  margin: auto;
+  margin-bottom: 2em;
 }

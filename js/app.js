@@ -1,5 +1,6 @@
 'use strict';
 
+
 //Variables
 var BUG_VELOCITY = 44;
 var canvas = document.getElementById('myCanvas');
