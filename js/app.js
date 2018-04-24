@@ -98,8 +98,25 @@ console.log('test 50',Bugger.scoreIsTopTen(50));
 Bugger.addTopTenScore('Freddy', 50);
 console.log('after adding Freddy',Bugger.topScores);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //Variables
-var BUG_VELOCITY = 44;
+var BUG_VELOCITY = 40;
 var canvas = document.getElementById('myCanvas');
 var ctx = canvas.getContext('2d');
 
@@ -108,11 +125,11 @@ var ctx = canvas.getContext('2d');
  */
 function Bug() {
   this.image = new Image();
-  this.image.src = "http://via.placeholder.com/44x44";
-  this.width = 44;
-  this.height = 44;
-  this.xPos = (canvas.width/2)-(this.width/2);
-  this.yPos = canvas.height-45;
+  this.image.src = "assets/bug.png";
+  this.width = 40;
+  this.height = 40;
+  this.xPos = (canvas.width/2)-(this.width);
+  this.yPos = canvas.height- this.height;
 }
 
 Bug.prototype.drawBug = function() {
@@ -193,5 +210,6 @@ function Obstacle() {
 var player = new Bug();
 player.drawBug();
 window.addEventListener('keypress', function(event) {
-  player.moveBug(event);
+player.moveBug(event);
 });
+
