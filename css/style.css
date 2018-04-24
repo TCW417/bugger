@@ -168,15 +168,15 @@ table tr td{
   margin: auto;
 }
 #monitor {
-  width: 1415px;
+  width: 1250px;
   margin: auto;
 }
 
 #myCanvas {
   position: absolute;
-  left: 336px;
-  top: 134px;
-  background-color: rgb(37, 37, 37);
+  left: 310px;
+  top: 110px;
+  background: linear-gradient(90deg, rgb(20, 20, 20) 5%, rgb(40, 40, 40) 10%, rgb(59, 59, 59) 40%, rgba(40, 40, 40) 90%, rgb(20, 20, 20) 95%);
   border-radius: 10px;
 }
 
