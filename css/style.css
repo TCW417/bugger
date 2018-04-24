@@ -1,5 +1,6 @@
 
 h1, h2, h3, h4, label, button {
+
   font-family: 'Audiowide', cursive;
 }
 
@@ -31,6 +32,7 @@ h4 {
   clear: both;
   height: 330px;
   padding-bottom: 30px;
+
 }
 .bio img {
   display: block;
@@ -80,6 +82,10 @@ header div a {
   text-decoration: none;
 }
 
+h2#scoreheader {
+  color: white;
+}
+
 fieldset#newTop {
   display: block;
   /* width: 20em; */
@@ -93,8 +99,16 @@ fieldset#newTop button {
   margin: 20px auto;
   border: 4px solid black;
   border-radius: 10px;
+  background-color: #ff00c1;opacity: .9;
+  color: blue;
 }
-
+fieldset#newTop input {
+  background-color: #ff00c1;opacity: .9;
+  color: blue;
+  font-family: 'Jua', sans-serif;
+  border: 1px solid black;
+  border-radius: 10px;
+}
 main {
   /* width: 56em; */
   /* height: 48em; */
@@ -128,6 +142,28 @@ ul#landing-menu li a {
   text-decoration: none;
   color: black;
 }
+
+table {
+  margin: 15px auto;
+  font-family: 'Press Start 2P', cursive;
+  border-spacing: 10px;
+  border-collapse: separate;
+}
+
+table tr {
+  padding: 10px;
+
+}
+
+table tr td{
+  background-color: #4900ff;
+  color: white;
+  border-radius: 25px;
+  margin-right: 10px;
+  text-align: center;
+  padding: 10px;
+}
+
 #monitor {
   width: 40em;
   height: 34em;
