@@ -7,18 +7,20 @@ Bugger.TopPlayer = function(player, score) {
   this.score = score;
 };
 
-Bugger.topScores = [
-  new Bugger.TopPlayer('Tom', 1000),
-  new Bugger.TopPlayer('Mom', 500),
-  new Bugger.TopPlayer('Allie', 0),
-  new Bugger.TopPlayer('Michele', 0),
-  new Bugger.TopPlayer('Tracy', 500),
-  new Bugger.TopPlayer('Andrew', 690),
-  new Bugger.TopPlayer('Justin', 650),
-  new Bugger.TopPlayer('Cameron', 200),
-  new Bugger.TopPlayer('Cat', 100),
-  new Bugger.TopPlayer('Tracy', 900)
-];
+Bugger.restoreTopTenTable = function() {
+  var top10 = JSON.parse(localStorage.getItem('topScores')) ||
+  [new Bugger.TopPlayer('Tom', 1000),
+    new Bugger.TopPlayer('Mom', 500),
+    new Bugger.TopPlayer('Allie', 0),
+    new Bugger.TopPlayer('Michele', 0),
+    new Bugger.TopPlayer('Tracy', 500),
+    new Bugger.TopPlayer('Andrew', 690),
+    new Bugger.TopPlayer('Justin', 650),
+    new Bugger.TopPlayer('Cameron', 200),
+    new Bugger.TopPlayer('Cat', 100),
+    new Bugger.TopPlayer('Tracy', 900)];
+  return Bugger.sortObjArrayOnKey(top10, 'score', false);
+};
 
 Bugger.sortObjArrayOnKey = function(objArray, keyName, accending) {
   // This is a standard bubble sort
@@ -72,31 +74,13 @@ Bugger.scoreIsTopTen = function(score) {
 };
 
 Bugger.addTopTenScore = function(player, score) {
-  Bugger.topScores = JSON.parse(localStorage.topScores);
+  Bugger.topScores = JSON.parse(localStorage.getItem('topScores')) || Bugger.restoreTopTenTable();
   Bugger.topScores.push({player, score});
   Bugger.topScores = Bugger.sortObjArrayOnKey(Bugger.topScores,'score',false);
   Bugger.topScores.pop();
   localStorage.topScores = JSON.stringify(Bugger.topScores);
 };
 
-console.log('pre sort',Bugger.topScores);
-Bugger.topScores = Bugger.sortObjArrayOnKey(Bugger.topScores,'score', false);
-console.log('post sort', Bugger.topScores);
-
-localStorage.setItem('MyName','Tracy');
-// localStorage.topScores = JSON.stringify(Bugger.topScores);
-localStorage.setItem('topScores', JSON.stringify(Bugger.topScores));
-
-var testArray = JSON.parse(localStorage.getItem('topScores'));
-console.log(testArray);
-console.log(localStorage.MyName);
-
-// Bugger.clearTopTenTable();
-// Bugger.renderTopTenTable();
-
-console.log('test 50',Bugger.scoreIsTopTen(50));
-Bugger.addTopTenScore('Freddy', 50);
-console.log('after adding Freddy',Bugger.topScores);
 
 
 
