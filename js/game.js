@@ -42,15 +42,6 @@ Bug.prototype.moveBug = function(event) {
   this.drawBug();
 };
 
-
-
-
-
-
-
-
-
-
 /**
  * OBSTACLES
  */
