@@ -40,7 +40,7 @@ Bug.prototype.moveBug = function(event) {
   if(Bug.gameOver) return;
   if(event.keyCode == '119' && this.yPos > 0) {
     this.yPos -= BUG_VELOCITY;
-    // this.image.src = 'assets/bug.png'
+    this.image.src = 'assets/bug.png'
   }
   if(event.keyCode == '97' && this.xPos > 0) {
     this.xPos -= BUG_VELOCITY;
