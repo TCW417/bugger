@@ -42,7 +42,6 @@ Bug.prototype.clearBug = function() {
 };
 
 Bug.prototype.moveBug = function(event) {
-  if(Bug.gameOver) return;
   if(event.keyCode === 119 && this.yPos > 0) {
     this.yPos -= BOX_SIZE;
     this.image.src = 'assets/bug.png';
@@ -175,7 +174,6 @@ Bug.detectCollision = function() {
       var impactLeft = Bug.player.xPos >= Bug.allObstacles[bugRow][i].xPos && Bug.player.xPos <= Bug.allObstacles[bugRow][i].rightSide();
       var impactRight = Bug.player.rightSide() >= Bug.allObstacles[bugRow][i].xPos && Bug.player.rightSide() <= Bug.allObstacles[bugRow][i].rightSide();
       if (impactLeft||impactRight) {
-        Bug.loseState();
         return true;
       }
     }
@@ -190,22 +188,22 @@ Bug.detectCollision = function() {
  * Render Game - Draws All Objects to Canvas on Interval Timer
  */
 Bug.renderGame = function(){
+  Bug.createFrame();
+  if(Bug.detectCollision()) {
+    Bug.loseState();
+  }
+};
+
+Bug.createFrame = function () {
   ctx.clearRect(0, 0, canvas.width, canvas.height); //Clear Canvas
-
-
   for (var i = 0; i < Bug.allObstacles.length; i++) { //Move and Draw Obstacles
     for (var j = 0; j < Bug.allObstacles[i].length; j++) {
       Bug.allObstacles[i][j].moveObstacle();
       Bug.allObstacles[i][j].drawObstacle();
     }
   }
-
-
   ctx.fillText('Time:' + Bug.clock, 15, 475); //Draw countdown clock
-
-
   Bug.player.drawBug(); //Draw Bug
-  Bug.detectCollision();
 };
 
 
@@ -214,7 +212,7 @@ Bug.renderGame = function(){
  */
 Bug.loseState = function() {
   Bug.gameOver = true;
-  console.log('GAME OVER. YOU LOSE.');
+  console.log('Lose State Triggered');
   Bug.stopGame();
 };
 
@@ -238,8 +236,9 @@ Bug.displayScore = function() {
  * This is where winning-specific things happen
  */
 Bug.winState = function() {
-  console.log('You got into Production!');
+  console.log('Win State Triggered');
   Bug.stopGame();
+  Bug.createFrame(); //renders one more frame after game cease
 };
 
 
@@ -305,12 +304,14 @@ Bug.buildObsTrain = function(movesRight) {
  * END OF GAME BEHAVIORS
  */
 Bug.stopGame = function() {
+  console.log('Stop Game Triggered');
   window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
   window.clearInterval(Bug.clockRate); //Stop Timer
-  Bug.renderGame(); //renders one more frame after game cease
-  Bug.displayScore();
-};
 
+  window.document.removeEventListener('keypress', Bug.keypressListener);
+  Bug.displayScore();
+
+};
 
 /**
  * Update Countdown Clock
@@ -319,7 +320,7 @@ Bug.stopGame = function() {
 Bug.clockTime = function() {
   Bug.clock--;
   if (Bug.clock === 0) {
-    console.log('Ran out of time');
+    console.log('Time End Lose State Triggered');
     Bug.loseState();
   }
   return Bug.clock;
