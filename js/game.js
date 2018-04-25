@@ -6,7 +6,7 @@ var canvas = document.getElementById('myCanvas');
 var ctx = canvas.getContext('2d');
 Bug.gameOver = false;
 
-Bug.level = 3;
+Bug.level = 9;
 
 /**
  * BUG
@@ -192,9 +192,19 @@ Bug.filenames = ['assets/binary-80px.png',
   'assets/binary-200px.png',
   'assets/binary-240px.png',
   'assets/binary-280px.png'];
+Bug.maxSeparation = [8, 7, 6, 5, 5, 4, 4, 4, 4, 4];
+Bug.minSeparation = [6, 5, 5, 4, 3, 3, 3, 2, 2, 2];
+Bug.maxObsLength = [4, 4, 4, 5, 5, 5, 6, 6, 6, 6];
+Bug.minObsLength = [4, 4, 3, 3, 3, 2, 2, 2, 2, 2];
+Bug.maxVelocity = [5, 5, 6, 6, 6, 7, 7, 8, 9, 10];
+Bug.minVelocity = [2, 2, 2, 3, 3, 4, 4, 4, 5, 6];
 
-Bug.randTrainCar = function(){
-  return Math.floor(Math.random()*(Bug.maxCar-Bug.minCar+1)+Bug.minCar);
+Bug.randInRange = function(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+};
+
+Bug.randTrainCar = function(lvl){
+  return Math.floor(Math.random()*(Bug.maxObsLength[lvl]-Bug.minObsLength[lvl]+1)+Bug.minObsLength[lvl]);
 };
 
 Bug.randSpace = function(minSpace, maxSpace){
@@ -206,11 +216,11 @@ Bug.buildMetaTrain = function() {
   var car=[], space=[];
   var i = 0;
   do {
-    car[i] = Bug.randTrainCar();
-    space[i] = Bug.randSpace(Bug.minSpace, Bug.maxSpaceTable[Bug.level-1]);
+    car[i] = Bug.randInRange(Bug.minObsLength[Bug.level], Bug.maxObsLength[Bug.level]);
+    space[i] = Bug.randInRange(Bug.minSeparation[Bug.level], Bug.maxSeparation[Bug.level]);
     trainLength += (car[i] + space[i]);
     i++;
-  } while (trainLength <= Bug.maxUnits);
+  } while (trainLength <= canvas.width/Bug.BUG_VELOCITY);
   return [car, space];
 };
 
@@ -226,15 +236,15 @@ Bug.Traincar = function(width, xPos, velocity){
 };
 
 Bug.buildObsTrain = function(movesRight) {
-  var xPos = (movesRight ? 0 : 640);
+  var xPos = (movesRight ? 0 : 640) + (Bug.randInRange(50,200)*(movesRight?1:-1));
   var metaTrain = Bug.buildMetaTrain();
   var car = metaTrain[0];
   var space = metaTrain[1];
   var train = [];
-  var v = Bug.randomVelocity() * (movesRight ? 1 : -1);
+  var v = Bug.randInRange(Bug.minVelocity[Bug.level], Bug.maxVelocity[Bug.level]) * (movesRight ? 1 : -1);
   for (var k = 0; k < car.length; k++) {
     train[k] = new Bug.Traincar(car[k]*BUG_VELOCITY, xPos, v);
-    xPos += (train[k].width + space[k]*BUG_VELOCITY) * (movesRight ? 1 : -1);
+    xPos += ((train[k].width + space[k]*BUG_VELOCITY) * (movesRight ? 1 : -1));
   }
   console.log(car, space, train);
   return train;
