@@ -2,7 +2,7 @@
 
 //Variables
 var BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
-var TIME_LIMIT = 10; //Amount of time allowed to play game
+var TIME_LIMIT = 30; //Amount of time allowed to play game
 var canvas = document.getElementById('myCanvas'); //Canvas HTML location
 var ctx = canvas.getContext('2d'); //2 dimensional canvas rendering
 ctx.font = '30px Arial';
@@ -218,6 +218,22 @@ Bug.loseState = function() {
   Bug.stopGame();
 };
 
+/*
+This is where scoring happens
+*/
+
+Bug.displayScore = function() {
+  var rowScore = 100*(11 - Bug.player.yPos/BOX_SIZE);
+  var finalRowBonus = 0;
+  if (Bug.player.yPos/BOX_SIZE === 0) {
+    finalRowBonus = 500;
+  }
+  var timeBonus = Bug.clock*10;
+  var totalScore = rowScore + finalRowBonus + timeBonus;
+  ctx.fillText('Score: ' + totalScore, canvas.width/2, canvas.height/2);
+  return totalScore;
+};
+
 /**
  * This is where winning-specific things happen
  */
@@ -231,7 +247,7 @@ Bug.winState = function() {
 Bug.minCar = 2;
 Bug.maxCar = 6;
 Bug.minSpace = 3;
-Bug.maxUnits = canvas.width/BUG_VELOCITY;
+Bug.maxUnits = canvas.width/BOX_SIZE;
 Bug.maxSpaceTable = [ 14, 13, 12, 11, 10, 9, 8, 7, 6 ];
 Bug.filenames = ['assets/binary-80px.png',
   'assets/binary-120px.png',
@@ -267,7 +283,7 @@ Bug.buildMetaTrain = function() {
     space[i] = Bug.randInRange(Bug.minSeparation[Bug.level], Bug.maxSeparation[Bug.level]);
     trainLength += (car[i] + space[i]);
     i++;
-  } while (trainLength <= canvas.width/Bug.BUG_VELOCITY);
+  } while (trainLength <= canvas.width/Bug.BOX_SIZE);
   return [car, space];
 };
 
@@ -279,7 +295,7 @@ Bug.Traincar = function(width, xPos, velocity){
   this.width = width;
   this.xPos = xPos;
   this.velocity = velocity;
-  this.filepath = Bug.filenames[this.width/BUG_VELOCITY - Bug.minCar];
+  this.filepath = Bug.filenames[this.width/BOX_SIZE - Bug.minCar];
 };
 
 Bug.buildObsTrain = function(movesRight) {
@@ -290,8 +306,8 @@ Bug.buildObsTrain = function(movesRight) {
   var train = [];
   var v = Bug.randInRange(Bug.minVelocity[Bug.level], Bug.maxVelocity[Bug.level]) * (movesRight ? 1 : -1);
   for (var k = 0; k < car.length; k++) {
-    train[k] = new Bug.Traincar(car[k]*BUG_VELOCITY, xPos, v);
-    xPos += ((train[k].width + space[k]*BUG_VELOCITY) * (movesRight ? 1 : -1));
+    train[k] = new Bug.Traincar(car[k]*BOX_SIZE, xPos, v);
+    xPos += ((train[k].width + space[k]*BOX_SIZE) * (movesRight ? 1 : -1));
   }
   console.log(car, space, train);
   return train;
@@ -304,6 +320,7 @@ Bug.stopGame = function() {
   window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
   window.clearInterval(Bug.clockRate); //Stop Timer
   Bug.renderGame(); //renders one more frame after game cease
+  Bug.displayScore();
 };
 
 
