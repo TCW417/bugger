@@ -59,8 +59,6 @@ Bug.prototype.moveBug = function(event) {
     this.yPos += BOX_SIZE;
     this.image.src = 'assets/bug_down.png';
   }
-  console.log('bug at',this.xPos,this.rightSide());
-  console.log('The bug is on row ',this.bugRowNum());
 
   if(this.yPos === 0) {
     Bug.winState();
@@ -172,10 +170,12 @@ Bug.buildObstacleRow = function(rowNum) {
 Bug.detectCollision = function() {
   var bugRow = Bug.player.bugRowNum(); //Retrieve Row that Bug is currently on
   if (Bug.allObstacles[bugRow]) {
+
     for (var i = 0; i < Bug.allObstacles[bugRow].length; i++) {
       var impactLeft = Bug.player.xPos >= Bug.allObstacles[bugRow][i].xPos && Bug.player.xPos <= Bug.allObstacles[bugRow][i].rightSide();
       var impactRight = Bug.player.rightSide() >= Bug.allObstacles[bugRow][i].xPos && Bug.player.rightSide() <= Bug.allObstacles[bugRow][i].rightSide();
       if (impactLeft||impactRight) {
+        Bug.loseState();
         return true;
       }
     }
@@ -191,18 +191,21 @@ Bug.detectCollision = function() {
  */
 Bug.renderGame = function(){
   ctx.clearRect(0, 0, canvas.width, canvas.height); //Clear Canvas
+
+
   for (var i = 0; i < Bug.allObstacles.length; i++) { //Move and Draw Obstacles
     for (var j = 0; j < Bug.allObstacles[i].length; j++) {
       Bug.allObstacles[i][j].moveObstacle();
       Bug.allObstacles[i][j].drawObstacle();
     }
   }
-  ctx.fillText('Time:' + Bug.clock, 15, 475); //Draw countdown clock
-  Bug.player.drawBug(); //Draw Bug
 
-  if (Bug.detectCollision()) { //Detect Collisions
-    Bug.loseState();
-  }
+
+  ctx.fillText('Time:' + Bug.clock, 15, 475); //Draw countdown clock
+
+
+  Bug.player.drawBug(); //Draw Bug
+  Bug.detectCollision();
 };
 
 
@@ -286,9 +289,9 @@ Bug.buildObsTrain = function(movesRight) {
  * END OF GAME BEHAVIORS
  */
 Bug.stopGame = function() {
-  Bug.renderGame();
   window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
   window.clearInterval(Bug.clockRate); //Stop Timer
+  Bug.renderGame(); //renders one more frame after game cease
 };
 
 
