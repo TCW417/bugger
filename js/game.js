@@ -2,16 +2,16 @@
 
 //Variables
 var BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
-var TIME_LIMIT = 10; //Amount of time allowed to play game
+var TIME_LIMIT = 30; //Amount of time allowed to play game
 var canvas = document.getElementById('myCanvas'); //Canvas HTML location
 var ctx = canvas.getContext('2d'); //2 dimensional canvas rendering
-ctx.font = "30px Arial";
+ctx.font = '30px Arial';
 ctx.fillStyle = '#00ff00';
 Bug.gameOver = false; //Game State
 
 
 
-Bug.level = 9;
+Bug.level = 1;
 
 /**
  * BUG Constructor - Create Bug Object
@@ -43,23 +43,23 @@ Bug.prototype.clearBug = function() {
 
 Bug.prototype.moveBug = function(event) {
   if(Bug.gameOver) return;
-  if(event.keyCode == '119' && this.yPos > 0) {
+  if(event.keyCode === 119 && this.yPos > 0) {
     this.yPos -= BOX_SIZE;
-    this.image.src = 'assets/bug.png'
+    this.image.src = 'assets/bug.png';
   }
-  if(event.keyCode == '97' && this.xPos > 0) {
+  if(event.keyCode === 97 && this.xPos > 0) {
     this.xPos -= BOX_SIZE;
     this.image.src = 'assets/bug_left.png';
   }
-  if(event.keyCode == '100' && this.xPos < (canvas.width - this.width)){
+  if(event.keyCode === 100 && this.xPos < (canvas.width - this.width)){
     this.xPos += BOX_SIZE;
-    this.image.src = 'assets/bug_right.png'
+    this.image.src = 'assets/bug_right.png';
   }
-  if(event.keyCode == '115' && this.yPos < (canvas.height - 45)) {
+  if(event.keyCode === 115 && this.yPos < (canvas.height - 45)) {
     this.yPos += BOX_SIZE;
-    this.image.src = 'assets/bug_down.png'
+    this.image.src = 'assets/bug_down.png';
   }
-  console.log('bug at',this.xPos,this.rightSide())
+  console.log('bug at',this.xPos,this.rightSide());
   console.log('The bug is on row ',this.bugRowNum());
 
   if(this.yPos === 0) {
@@ -170,7 +170,7 @@ Bug.buildObstacleRow = function(rowNum) {
  * @return {boolean}  - TRUE if obejcts collide / FALSE if they do not
  */
 Bug.detectCollision = function() {
-  var bugRow = Bug.player.bugRowNum(); //Retrieve Row that Bug is currently on  
+  var bugRow = Bug.player.bugRowNum(); //Retrieve Row that Bug is currently on
   if (Bug.allObstacles[bugRow]) {
     for (var i = 0; i < Bug.allObstacles[bugRow].length; i++) {
       var impactLeft = Bug.player.xPos >= Bug.allObstacles[bugRow][i].xPos && Bug.player.xPos <= Bug.allObstacles[bugRow][i].rightSide();
@@ -221,15 +221,11 @@ Bug.loseState = function() {
 Bug.winState = function() {
   console.log('You got into Production!');
   Bug.stopGame();
-}
+};
 
 
 
 Bug.minCar = 2;
-Bug.maxCar = 6;
-Bug.minSpace = 3;
-Bug.maxUnits = canvas.width/BUG_VELOCITY;
-Bug.maxSpaceTable = [ 14, 13, 12, 11, 10, 9, 8, 7, 6 ];
 Bug.filenames = ['assets/binary-80px.png',
   'assets/binary-120px.png',
   'assets/binary-160px.png',
@@ -247,14 +243,6 @@ Bug.randInRange = function(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
-Bug.randTrainCar = function(lvl){
-  return Math.floor(Math.random()*(Bug.maxObsLength[lvl]-Bug.minObsLength[lvl]+1)+Bug.minObsLength[lvl]);
-};
-
-Bug.randSpace = function(minSpace, maxSpace){
-  return Math.floor(Math.random()*(maxSpace-minSpace+1)+minSpace);
-};
-
 Bug.buildMetaTrain = function() {
   var trainLength = 0;
   var car=[], space=[];
@@ -264,7 +252,7 @@ Bug.buildMetaTrain = function() {
     space[i] = Bug.randInRange(Bug.minSeparation[Bug.level], Bug.maxSeparation[Bug.level]);
     trainLength += (car[i] + space[i]);
     i++;
-  } while (trainLength <= canvas.width/Bug.BUG_VELOCITY);
+  } while (trainLength <= canvas.width/Bug.BOX_SIZE);
   return [car, space];
 };
 
@@ -276,7 +264,7 @@ Bug.Traincar = function(width, xPos, velocity){
   this.width = width;
   this.xPos = xPos;
   this.velocity = velocity;
-  this.filepath = Bug.filenames[this.width/BUG_VELOCITY - Bug.minCar];
+  this.filepath = Bug.filenames[this.width/BOX_SIZE - Bug.minCar];
 };
 
 Bug.buildObsTrain = function(movesRight) {
@@ -287,8 +275,8 @@ Bug.buildObsTrain = function(movesRight) {
   var train = [];
   var v = Bug.randInRange(Bug.minVelocity[Bug.level], Bug.maxVelocity[Bug.level]) * (movesRight ? 1 : -1);
   for (var k = 0; k < car.length; k++) {
-    train[k] = new Bug.Traincar(car[k]*BUG_VELOCITY, xPos, v);
-    xPos += ((train[k].width + space[k]*BUG_VELOCITY) * (movesRight ? 1 : -1));
+    train[k] = new Bug.Traincar(car[k]*BOX_SIZE, xPos, v);
+    xPos += ((train[k].width + space[k]*BOX_SIZE) * (movesRight ? 1 : -1));
   }
   console.log(car, space, train);
   return train;
@@ -301,7 +289,7 @@ Bug.stopGame = function() {
   Bug.renderGame();
   window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
   window.clearInterval(Bug.clockRate); //Stop Timer
-}
+};
 
 
 /**
@@ -315,14 +303,14 @@ Bug.clockTime = function() {
     Bug.loseState();
   }
   return Bug.clock;
-}
+};
 
 
 
 /**
  * LOCIC  - Runs on page load
  */
-window.onload = function() {  
+window.onload = function() {
   Bug.clock = TIME_LIMIT;
   Bug.keypressListener = function(event) {
     Bug.player.moveBug(event);
