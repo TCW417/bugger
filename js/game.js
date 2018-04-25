@@ -40,19 +40,22 @@ Bug.prototype.moveBug = function(event) {
   if(Bug.gameOver) return;
   if(event.keyCode == '119' && this.yPos > 0) {
     this.yPos -= BUG_VELOCITY;
+    // this.image.src = 'assets/bug.png'
   }
   if(event.keyCode == '97' && this.xPos > 0) {
     this.xPos -= BUG_VELOCITY;
+    this.image.src = 'assets/bug_left.png';
   }
   if(event.keyCode == '100' && this.xPos < (canvas.width - this.width)){
     this.xPos += BUG_VELOCITY;
+    this.image.src = 'assets/bug_right.png'
   }
   if(event.keyCode == '115' && this.yPos < (canvas.height - 45)) {
     this.yPos += BUG_VELOCITY;
+    this.image.src = 'assets/bug_down.png'
   }
   console.log('bug at',this.xPos,this.rightSide())
-  // this.drawBug();
-  // console.log('The bug is on row ',this.bugRowNum());
+  console.log('The bug is on row ',this.bugRowNum());
 };
 
 /**
@@ -61,7 +64,6 @@ Bug.prototype.moveBug = function(event) {
 function Obstacle(src, h, w, startRow, movesRight) {
   this.image = new Image();
   this.image.src = src;
-  // this.image.height = ;
   this.width = w;
   this.height = h;
   this.movesRight = movesRight; // false if it moves left
@@ -183,24 +185,3 @@ window.onload = function() {
   // var intervalID = window.setInterval(drawObstacles, 500);
   Bug.frameRateID = window.setInterval(Bug.drawObstacles, 33);
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * LOGIC
- */
-
-
