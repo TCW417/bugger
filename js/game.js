@@ -6,7 +6,7 @@ var canvas = document.getElementById('myCanvas');
 var ctx = canvas.getContext('2d');
 Bug.gameOver = false;
 
-Bug.level = 1;
+Bug.level = 3;
 
 /**
  * BUG
@@ -126,13 +126,14 @@ Bug.buildObstacleEndZone = function() {
 };
 
 Bug.buildObstacleRow = function(rowNum) {
+  console.log('row',rowNum);
   var trains = Bug.buildObsTrain(!!(rowNum%2));
   for (var t = 0; t < trains.length; t++) {
     Bug.allObstacles[rowNum][t] = (new Obstacle(
       trains[t].filepath, 36, trains[t].width, rowNum, !!(rowNum%2)));
     Bug.allObstacles[rowNum][t].velocity = trains[t].velocity;
     Bug.allObstacles[rowNum][t].xPos = trains[t].xPos;
-    console.log('B.O.R Row',rowNum,'obs',Bug.allObstacles[rowNum][t]);
+    // console.log('B.O.R Row',rowNum,'obs',Bug.allObstacles[rowNum][t]);
   }
 };
 
@@ -233,8 +234,9 @@ Bug.buildObsTrain = function(movesRight) {
   var v = Bug.randomVelocity() * (movesRight ? 1 : -1);
   for (var k = 0; k < car.length; k++) {
     train[k] = new Bug.Traincar(car[k]*BUG_VELOCITY, xPos, v);
-    xPos += (train[k].width + space[k]*BUG_VELOCITY) * (fromRight ? -1 : 1);
+    xPos += (train[k].width + space[k]*BUG_VELOCITY) * (movesRight ? 1 : -1);
   }
+  console.log(car, space, train);
   return train;
 };
 
