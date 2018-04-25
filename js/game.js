@@ -40,18 +40,22 @@ Bug.prototype.moveBug = function(event) {
   if(Bug.gameOver) return;
   if(event.keyCode == '119' && this.yPos > 0) {
     this.yPos -= BUG_VELOCITY;
+    this.image.src = 'assets/bug.png'
   }
   if(event.keyCode == '97' && this.xPos > 0) {
     this.xPos -= BUG_VELOCITY;
+    this.image.src = 'assets/bug_left.png';
   }
   if(event.keyCode == '100' && this.xPos < (canvas.width - this.width)){
     this.xPos += BUG_VELOCITY;
+    this.image.src = 'assets/bug_right.png'
   }
   if(event.keyCode == '115' && this.yPos < (canvas.height - 45)) {
     this.yPos += BUG_VELOCITY;
+    this.image.src = 'assets/bug_down.png'
   }
-  // this.drawBug();
-  // console.log('The bug is on row ',this.bugRowNum());
+  console.log('bug at',this.xPos,this.rightSide())
+  console.log('The bug is on row ',this.bugRowNum());
 };
 
 /**
@@ -59,8 +63,7 @@ Bug.prototype.moveBug = function(event) {
  */
 function Obstacle(src, h, w, startRow, movesRight) {
   this.image = new Image();
-  this.image.src = 'assets/binary-9 copy.png';
-  // this.image.height = ;
+  this.image.src = src;
   this.width = w;
   this.height = h;
   this.movesRight = movesRight; // false if it moves left
@@ -70,7 +73,7 @@ function Obstacle(src, h, w, startRow, movesRight) {
     this.xPos = canvas.width;
   }
   this.startXpos = this.xPos;
-  this.yPos = (startRow * 40) + 40;
+  this.yPos = (startRow * 40);// + 40;
   var v = this.randomVelocity();
   this.velocity = (movesRight ? v : -v);
 }
@@ -97,43 +100,70 @@ Obstacle.prototype.moveObstacle = function() {
   this.drawObstacle();
 };
 
+Bug.buildObstacleEndZone = function() {
+  // construct home row of obstacles. These are fixed (zero velocity)
+  // with gaps where the bug can tuck in.
+
+  Bug.allObstacles.push([]);
+  Bug.allObstacles[0].push(new Obstacle('assets/binary-118px.png',36,118,0,true));
+  Bug.allObstacles[0].push(new Obstacle('assets/binary-156px.png',36,156,0,true));
+  Bug.allObstacles[0].push(new Obstacle('assets/binary-116px.png',36,116,0,true));
+  Bug.allObstacles[0].push(new Obstacle('assets/binary-118px.png',36,118,0,true));
+  // Bug.allObstacles[0].push(new Obstacle('assets/binary-75px.png',36,75,0,true));
+  Bug.allObstacles[0][0].xPos = 0; // + 118+44 = 160
+  Bug.allObstacles[0][1].xPos = 162; //162; //+160+40 = 360
+  Bug.allObstacles[0][2].xPos = 362; //+120+40 = 520
+  Bug.allObstacles[0][3].xPos = 522; //+75+50 = 580
+  // Bug.allObstacles[0][4].xPos = 580;
+  for (var i = 0; i < Bug.allObstacles[0].length; i++) {
+    Bug.allObstacles[0][i].velocity = 0;
+    Bug.allObstacles[0][i].yPos = 0;
+  }
+};
+
+Bug.buildObstacleRow = function(rowNum) {
+  Bug.allObstacles[rowNum][0] = (new Obstacle('assets/binary-9 copy.png', 36, 227, rowNum, !!(rowNum%2)));
+};
+
 function detectCollision() {
   var bugRow = Bug.player.bugRowNum();
-
   //oi = obstacle index
-  var oi = bugRow-1;
+  var oi = bugRow; // -1
   if (Bug.allObstacles[oi]) {
-    var impactLeft = Bug.player.xPos >= Bug.allObstacles[oi].xPos && Bug.player.xPos <= Bug.allObstacles[oi].rightSide();
-    var impactRight = Bug.player.rightSide() >= Bug.allObstacles[oi].xPos && Bug.player.rightSide() <= Bug.allObstacles[oi].rightSide();
-    //if we get a valid row number, then we evaluate below if statement
-    if (impactLeft||impactRight) {
-      console.log('Impact! Bug.player', Bug.player.xPos,Bug.player.rightSide(),'obstacle', Bug.allObstacles[oi].xPos,Bug.allObstacles[oi].rightSide());
-      // console.log('Same row!');
-      return true;
+    for (var i = 0; i < Bug.allObstacles[oi].length; i++) {
+      var impactLeft = Bug.player.xPos >= Bug.allObstacles[oi][i].xPos && Bug.player.xPos <= Bug.allObstacles[oi][i].rightSide();
+      var impactRight = Bug.player.rightSide() >= Bug.allObstacles[oi][i].xPos && Bug.player.rightSide() <= Bug.allObstacles[oi][i].rightSide();
+      //if we get a valid row number, then we evaluate below if statement
+      if (impactLeft||impactRight) {
+        console.log('bugRow',bugRow);
+        console.log('Impact! Bug.player', Bug.player.xPos,Bug.player.rightSide(),'obstacle', Bug.allObstacles[oi][i].xPos,Bug.allObstacles[oi][i].rightSide());
+        return true;
+      }
     }
   }
   return false;
 }
 
 //interval timer handler
-function drawObstacles(e){
+Bug.drawObstacles = function(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  for (var obj of Bug.allObstacles) {
-    obj.moveObstacle();
-    // obj.drawObstacle();
-    Bug.player.drawBug();
+  for (var i = 0; i < Bug.allObstacles.length; i++) {
+    for (var j = 0; j < Bug.allObstacles[i].length; j++) {
+      Bug.allObstacles[i][j].moveObstacle();
+    }
   }
+  Bug.player.drawBug();
   if (detectCollision()) {
-    gameOver();
+    Bug.handleCollision();
   }
-}
+};
 
-function gameOver() {
+Bug.handleCollision = function() {
   console.log('GAME OVER. YOU LOSE.');
   Bug.gameOver = true;
-  window.clearInterval(Bug.intervalID);
+  window.clearInterval(Bug.frameRateID);
   window.removeEventListener('keypress', Bug.keypressListener);
-}
+};
 
 Bug.keypressListener = function(event) {
   Bug.player.moveBug(event);
@@ -142,35 +172,17 @@ Bug.keypressListener = function(event) {
 
 // Draw bug and game field on window load and play game!
 window.onload = function() {
-  Bug.allObstacles = []; //Holds all obstacles on screen
-  for (var i = 0; i < 10; i++) {
-    Bug.allObstacles.push(new Obstacle('assets/binary-9 copy.png', 36, 227, i, !!(i%2)));
+  Bug.allObstacles = []; //; Bug.allObstacles[0]=[]; //Holds all obstacles on screen
+  Bug.buildObstacleEndZone();
+  for (var i = 1; i < 11; i++) {
+    Bug.allObstacles.push([]);
+    Bug.buildObstacleRow(i);
   }
   Bug.player = new Bug();
-  Bug.player.drawBug();
+  Bug.drawObstacles();
+  // Bug.player.drawBug();
   //listener for keypresses
   window.addEventListener('keypress', Bug.keypressListener);
   // var intervalID = window.setInterval(drawObstacles, 500);
-  Bug.intervalID = window.setInterval(drawObstacles, 33);
+  Bug.frameRateID = window.setInterval(Bug.drawObstacles, 33);
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * LOGIC
- */
-
-
