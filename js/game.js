@@ -11,7 +11,7 @@ Bug.gameOver = false; //Game State
 
 
 
-Bug.level = 9;
+Bug.level = 1;
 
 /**
  * BUG Constructor - Create Bug Object
@@ -245,10 +245,6 @@ Bug.winState = function() {
 
 
 Bug.minCar = 2;
-Bug.maxCar = 6;
-Bug.minSpace = 3;
-Bug.maxUnits = canvas.width/BOX_SIZE;
-Bug.maxSpaceTable = [ 14, 13, 12, 11, 10, 9, 8, 7, 6 ];
 Bug.filenames = ['assets/binary-80px.png',
   'assets/binary-120px.png',
   'assets/binary-160px.png',
@@ -264,14 +260,6 @@ Bug.minVelocity = [2, 2, 2, 3, 3, 4, 4, 4, 5, 6];
 
 Bug.randInRange = function(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
-};
-
-Bug.randTrainCar = function(lvl){
-  return Math.floor(Math.random()*(Bug.maxObsLength[lvl]-Bug.minObsLength[lvl]+1)+Bug.minObsLength[lvl]);
-};
-
-Bug.randSpace = function(minSpace, maxSpace){
-  return Math.floor(Math.random()*(maxSpace-minSpace+1)+minSpace);
 };
 
 Bug.buildMetaTrain = function() {
