@@ -50,6 +50,7 @@ Bug.prototype.moveBug = function(event) {
   if(event.keyCode == '115' && this.yPos < (canvas.height - 45)) {
     this.yPos += BUG_VELOCITY;
   }
+  console.log('bug at',this.xPos,this.rightSide())
   // this.drawBug();
   // console.log('The bug is on row ',this.bugRowNum());
 };
@@ -100,18 +101,18 @@ Obstacle.prototype.moveObstacle = function() {
 Bug.buildObstacleHomeRow = function() {
   // construct home row of obstacles. These are fixed (zero velocity)
   // with gaps where the bug can tuck in.
-  var fudge = 3;
+
   Bug.allObstacles.push([]);
-  Bug.allObstacles[0].push(new Obstacle('assets/binary-75px.png',36,75,0,true));
-  Bug.allObstacles[0].push(new Obstacle('assets/binary-75px.png',36,75,0,true));
-  Bug.allObstacles[0].push(new Obstacle('assets/binary-155px.png',36,155,0,true));
-  Bug.allObstacles[0].push(new Obstacle('assets/binary-75px.png',36,75,0,true));
-  Bug.allObstacles[0].push(new Obstacle('assets/binary-75px.png',36,75,0,true));
-  Bug.allObstacles[0][0].xPos = 0; //+75+50 = 125
-  Bug.allObstacles[0][1].xPos = 125; //+75+50 = 250
-  Bug.allObstacles[0][2].xPos = 250; //+155+50 = 455
-  Bug.allObstacles[0][3].xPos = 455; //+75+50 = 580
-  Bug.allObstacles[0][4].xPos = 580;
+  Bug.allObstacles[0].push(new Obstacle('assets/binary-118px.png',36,118,0,true));
+  Bug.allObstacles[0].push(new Obstacle('assets/binary-156px.png',36,156,0,true));
+  Bug.allObstacles[0].push(new Obstacle('assets/binary-116px.png',36,116,0,true));
+  Bug.allObstacles[0].push(new Obstacle('assets/binary-118px.png',36,118,0,true));
+  // Bug.allObstacles[0].push(new Obstacle('assets/binary-75px.png',36,75,0,true));
+  Bug.allObstacles[0][0].xPos = 0; // + 118+44 = 160
+  Bug.allObstacles[0][1].xPos = 162; //162; //+160+40 = 360
+  Bug.allObstacles[0][2].xPos = 362; //+120+40 = 520
+  Bug.allObstacles[0][3].xPos = 522; //+75+50 = 580
+  // Bug.allObstacles[0][4].xPos = 580;
   for (var i = 0; i < Bug.allObstacles[0].length; i++) {
     Bug.allObstacles[0][i].velocity = 0;
     Bug.allObstacles[0][i].yPos = 0;
@@ -133,7 +134,7 @@ function detectCollision() {
       //if we get a valid row number, then we evaluate below if statement
       if (impactLeft||impactRight) {
         console.log('Impact! Bug.player', Bug.player.xPos,Bug.player.rightSide(),'obstacle', Bug.allObstacles[oi][i].xPos,Bug.allObstacles[oi][i].rightSide());
-        return false;
+        return true;
       }
     }
   }
@@ -170,10 +171,10 @@ Bug.keypressListener = function(event) {
 window.onload = function() {
   Bug.allObstacles = []; //; Bug.allObstacles[0]=[]; //Holds all obstacles on screen
   Bug.buildObstacleHomeRow();
-  // for (var i = 1; i < 10; i++) {
-  //   Bug.allObstacles.push([]);
-  //   Bug.buildObstacleRow(i);
-  // }
+  for (var i = 1; i < 10; i++) {
+    Bug.allObstacles.push([]);
+    Bug.buildObstacleRow(i);
+  }
   Bug.player = new Bug();
   Bug.drawObstacles();
   // Bug.player.drawBug();
