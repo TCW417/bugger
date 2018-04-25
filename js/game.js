@@ -6,6 +6,8 @@ var canvas = document.getElementById('myCanvas');
 var ctx = canvas.getContext('2d');
 Bug.gameOver = false;
 
+Bug.level = 1;
+
 /**
  * BUG
  */
@@ -74,8 +76,10 @@ function Obstacle(src, h, w, startRow, movesRight) {
   }
   this.startXpos = this.xPos;
   this.yPos = (startRow * 40);// + 40;
-  var v = this.randomVelocity();
-  this.velocity = (movesRight ? v : -v);
+  if (Bug.level > 3) {
+    var v = this.randomVelocity();
+    this.velocity = (movesRight ? v : -v);
+  }
 }
 
 Obstacle.prototype.randomVelocity = function() {
@@ -94,8 +98,10 @@ Obstacle.prototype.moveObstacle = function() {
   this.xPos += this.velocity;
   if(this.xPos >canvas.width||this.rightSide()<0) {
     this.xPos = this.startXpos;
-    var v = this.randomVelocity();
-    this.velocity = (this.movesRight ? v : -v);
+    if (Bug.level > 3) {
+      var v = this.randomVelocity();
+      this.velocity = (this.movesRight ? v : -v);
+    }
   }
   this.drawObstacle();
 };
@@ -109,12 +115,10 @@ Bug.buildObstacleEndZone = function() {
   Bug.allObstacles[0].push(new Obstacle('assets/binary-156px.png',36,156,0,true));
   Bug.allObstacles[0].push(new Obstacle('assets/binary-116px.png',36,116,0,true));
   Bug.allObstacles[0].push(new Obstacle('assets/binary-118px.png',36,118,0,true));
-  // Bug.allObstacles[0].push(new Obstacle('assets/binary-75px.png',36,75,0,true));
   Bug.allObstacles[0][0].xPos = 0; // + 118+44 = 160
   Bug.allObstacles[0][1].xPos = 162; //162; //+160+40 = 360
   Bug.allObstacles[0][2].xPos = 362; //+120+40 = 520
   Bug.allObstacles[0][3].xPos = 522; //+75+50 = 580
-  // Bug.allObstacles[0][4].xPos = 580;
   for (var i = 0; i < Bug.allObstacles[0].length; i++) {
     Bug.allObstacles[0][i].velocity = 0;
     Bug.allObstacles[0][i].yPos = 0;
@@ -122,7 +126,14 @@ Bug.buildObstacleEndZone = function() {
 };
 
 Bug.buildObstacleRow = function(rowNum) {
-  Bug.allObstacles[rowNum][0] = (new Obstacle('assets/binary-9 copy.png', 36, 227, rowNum, !!(rowNum%2)));
+  var trains = Bug.buildObsTrain(!!(rowNum%2));
+  for (var t = 0; t < trains.length; t++) {
+    Bug.allObstacles[rowNum][t] = (new Obstacle(
+      trains[t].filepath, 36, trains[t].width, rowNum, !!(rowNum%2)));
+    Bug.allObstacles[rowNum][t].velocity = trains[t].velocity;
+    Bug.allObstacles[rowNum][t].xPos = trains[t].xPos;
+    console.log('B.O.R Row',rowNum,'obs',Bug.allObstacles[rowNum][t]);
+  }
 };
 
 function detectCollision() {
@@ -169,6 +180,63 @@ Bug.keypressListener = function(event) {
   Bug.player.moveBug(event);
 };
 
+Bug.minCar = 2;
+Bug.maxCar = 6;
+Bug.minSpace = 3;
+Bug.maxUnits = canvas.width/BUG_VELOCITY;
+Bug.maxSpaceTable = [ 14, 13, 12, 11, 10, 9, 8, 7, 6 ];
+Bug.filenames = ['assets/binary-80px.png',
+  'assets/binary-120px.png',
+  'assets/binary-160px.png',
+  'assets/binary-200px.png',
+  'assets/binary-240px.png',
+  'assets/binary-280px.png'];
+
+Bug.randTrainCar = function(){
+  return Math.floor(Math.random()*(Bug.maxCar-Bug.minCar+1)+Bug.minCar);
+};
+
+Bug.randSpace = function(minSpace, maxSpace){
+  return Math.floor(Math.random()*(maxSpace-minSpace+1)+minSpace);
+};
+
+Bug.buildMetaTrain = function() {
+  var trainLength = 0;
+  var car=[], space=[];
+  var i = 0;
+  do {
+    car[i] = Bug.randTrainCar();
+    space[i] = Bug.randSpace(Bug.minSpace, Bug.maxSpaceTable[Bug.level-1]);
+    trainLength += (car[i] + space[i]);
+    i++;
+  } while (trainLength <= Bug.maxUnits);
+  return [car, space];
+};
+
+Bug.randomVelocity = function() {
+  return Math.ceil(Math.random()*5);
+};
+
+Bug.Traincar = function(width, xPos, velocity){
+  this.width = width;
+  this.xPos = xPos;
+  this.velocity = velocity;
+  this.filepath = Bug.filenames[this.width/BUG_VELOCITY - Bug.minCar];
+};
+
+Bug.buildObsTrain = function(movesRight) {
+  var xPos = (movesRight ? 0 : 640);
+  var metaTrain = Bug.buildMetaTrain();
+  var car = metaTrain[0];
+  var space = metaTrain[1];
+  var train = [];
+  var v = Bug.randomVelocity() * (movesRight ? 1 : -1);
+  for (var k = 0; k < car.length; k++) {
+    train[k] = new Bug.Traincar(car[k]*BUG_VELOCITY, xPos, v);
+    xPos += (train[k].width + space[k]*BUG_VELOCITY) * (fromRight ? -1 : 1);
+  }
+  return train;
+};
 
 // Draw bug and game field on window load and play game!
 window.onload = function() {
@@ -185,4 +253,9 @@ window.onload = function() {
   window.addEventListener('keypress', Bug.keypressListener);
   // var intervalID = window.setInterval(drawObstacles, 500);
   Bug.frameRateID = window.setInterval(Bug.drawObstacles, 33);
+
+  Bug.buildObsTrain(false);
+  Bug.buildObsTrain(true);
 };
+
+
