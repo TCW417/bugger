@@ -4,6 +4,8 @@
 var BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
 var canvas = document.getElementById('myCanvas'); //Canvas HTML location
 var ctx = canvas.getContext('2d'); //2 dimensional canvas rendering
+ctx.font = "30px Arial";
+ctx.fillStyle = '#00ff00';
 Bug.gameOver = false; //Game State
 
 /**
@@ -56,6 +58,8 @@ Bug.prototype.moveBug = function(event) {
   console.log('The bug is on row ',this.bugRowNum());
 };
 
+
+
 /**
  * OBSTACLE constructor - Creates World Obstacles
  * @param {string} src - Url of object image
@@ -102,6 +106,8 @@ Obstacle.prototype.moveObstacle = function() {
   }
 };
 
+
+
 /**
  * Constructs top-most row of Obstacle Objects
  * @return none
@@ -127,6 +133,8 @@ Bug.buildObstacleEndZone = function() {
   }
 };
 
+
+
 /**
  * Build all rows between ENDZONE and HOME ROW
  * @param {*} rowNum 
@@ -135,24 +143,30 @@ Bug.buildObstacleRow = function(rowNum) {
   Bug.allObstacles[rowNum][0] = (new Obstacle('assets/binary-9 copy.png', 36, 227, rowNum, !!(rowNum%2)));
 };
 
+
+
+/**
+ * Detect if Bug object contacts with any Obstacle object
+ * @return {boolean}  - TRUE if obejcts collide / FALSE if they do not
+ */
 Bug.detectCollision = function() {
-  var bugRow = Bug.player.bugRowNum();
-  //oi = obstacle index
-  var oi = bugRow; // -1
-  if (Bug.allObstacles[oi]) {
-    for (var i = 0; i < Bug.allObstacles[oi].length; i++) {
-      var impactLeft = Bug.player.xPos >= Bug.allObstacles[oi][i].xPos && Bug.player.xPos <= Bug.allObstacles[oi][i].rightSide();
-      var impactRight = Bug.player.rightSide() >= Bug.allObstacles[oi][i].xPos && Bug.player.rightSide() <= Bug.allObstacles[oi][i].rightSide();
+  var bugRow = Bug.player.bugRowNum(); //Retrieve Row that Bug is currently on  
+  if (Bug.allObstacles[bugRow]) {
+    for (var i = 0; i < Bug.allObstacles[bugRow].length; i++) {
+      var impactLeft = Bug.player.xPos >= Bug.allObstacles[bugRow][i].xPos && Bug.player.xPos <= Bug.allObstacles[bugRow][i].rightSide();
+      var impactRight = Bug.player.rightSide() >= Bug.allObstacles[bugRow][i].xPos && Bug.player.rightSide() <= Bug.allObstacles[bugRow][i].rightSide();
       //if we get a valid row number, then we evaluate below if statement
       if (impactLeft||impactRight) {
         console.log('bugRow',bugRow);
-        console.log('Impact! Bug.player', Bug.player.xPos,Bug.player.rightSide(),'obstacle', Bug.allObstacles[oi][i].xPos,Bug.allObstacles[oi][i].rightSide());
+        console.log('Impact! Bug.player', Bug.player.xPos,Bug.player.rightSide(),'obstacle', Bug.allObstacles[bugRow][i].xPos,Bug.allObstacles[bugRow][i].rightSide());
         return true;
       }
     }
   }
   return false;
-}
+};
+
+
 
 /**
  * TODO - ADD GAME HUD
@@ -166,29 +180,49 @@ Bug.renderGame = function(){
       Bug.allObstacles[i][j].drawObstacle();
     }
   }
+
+  ctx.fillText('Time:' + Bug.clock, 15, 475); //Draw countdown clock
+
+
+
   Bug.player.drawBug(); //Draw Bug
   if (Bug.detectCollision()) { //Detect Collisions
-    Bug.handleCollision();
+    Bug.endState();
   }
 };
 
 
 /**
- * handleCollision - 
+ * Call End-State Conditions
  */
-Bug.handleCollision = function() {
-  console.log('GAME OVER. YOU LOSE.');
+Bug.endState = function() {
   Bug.gameOver = true;
-  window.clearInterval(Bug.frameRateID);
-  window.removeEventListener('keypress', Bug.keypressListener);
+  console.log('GAME OVER. YOU LOSE.');
+  window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
+  window.clearInterval(Bug.clockRate); //Stop Timer
 };
 
-Bug.keypressListener = function(event) {
-  Bug.player.moveBug(event);
-};
 
-// Draw bug and game field on window load and play game!
+Bug.clockTime = function() {
+  --Bug.clock;
+
+  if (Bug.clock === 0) {
+
+    console.log('Ran out of time');
+    Bug.endState();
+  }
+
+  return Bug.clock;
+}
+
+/**
+ * LOCIC  - Runs on page load
+ */
 window.onload = function() {  
+  Bug.clock = 3; //Seconds until game over
+  Bug.keypressListener = function(event) {
+    Bug.player.moveBug(event);
+  };
   Bug.allObstacles = []; //; Bug.allObstacles[0]=[]; //Holds all obstacles on screen
   Bug.buildObstacleEndZone();
   for (var i = 1; i < 11; i++) {
@@ -198,5 +232,8 @@ window.onload = function() {
   Bug.player = new Bug();
   Bug.renderGame();
   window.addEventListener('keypress', Bug.keypressListener);
+
+
+  Bug.clockRate = window.setInterval(Bug.clockTime, 1000);
   Bug.frameRateID = window.setInterval(Bug.renderGame, 33);
 };
