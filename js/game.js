@@ -1,25 +1,30 @@
 'use strict';
 
 //Variables
-var BUG_VELOCITY = 40;
-var canvas = document.getElementById('myCanvas');
-var ctx = canvas.getContext('2d');
-Bug.gameOver = false;
+var BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
+var TIME_LIMIT = 10; //Amount of time allowed to play game
+var canvas = document.getElementById('myCanvas'); //Canvas HTML location
+var ctx = canvas.getContext('2d'); //2 dimensional canvas rendering
+ctx.font = "30px Arial";
+ctx.fillStyle = '#00ff00';
+Bug.gameOver = false; //Game State
+
+
 
 /**
- * BUG
+ * BUG Constructor - Create Bug Object
  */
 function Bug() {
   this.image = new Image();
   this.image.src = 'assets/bug.png';
-  this.width = 40;
-  this.height = 40;
-  this.xPos = (canvas.width/2)-(this.width);
-  this.yPos = canvas.height- this.height;
+  this.width = BOX_SIZE;
+  this.height = BOX_SIZE;
+  this.xPos = (canvas.width/2) - (this.width);
+  this.yPos = canvas.height - this.height;
 }
 
 Bug.prototype.bugRowNum = function() {
-  return this.yPos/BUG_VELOCITY;
+  return this.yPos/BOX_SIZE;
 };
 
 Bug.prototype.rightSide = function() {
@@ -34,32 +39,41 @@ Bug.prototype.clearBug = function() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
 
-//keypress event listener
 Bug.prototype.moveBug = function(event) {
-  // this.clearBug();
   if(Bug.gameOver) return;
   if(event.keyCode == '119' && this.yPos > 0) {
-    this.yPos -= BUG_VELOCITY;
+    this.yPos -= BOX_SIZE;
     this.image.src = 'assets/bug.png'
   }
   if(event.keyCode == '97' && this.xPos > 0) {
-    this.xPos -= BUG_VELOCITY;
+    this.xPos -= BOX_SIZE;
     this.image.src = 'assets/bug_left.png';
   }
   if(event.keyCode == '100' && this.xPos < (canvas.width - this.width)){
-    this.xPos += BUG_VELOCITY;
+    this.xPos += BOX_SIZE;
     this.image.src = 'assets/bug_right.png'
   }
   if(event.keyCode == '115' && this.yPos < (canvas.height - 45)) {
-    this.yPos += BUG_VELOCITY;
+    this.yPos += BOX_SIZE;
     this.image.src = 'assets/bug_down.png'
   }
   console.log('bug at',this.xPos,this.rightSide())
   console.log('The bug is on row ',this.bugRowNum());
+
+  if(this.yPos === 0) {
+    Bug.winState();
+  }
 };
 
+
+
 /**
- * OBSTACLES
+ * OBSTACLE constructor - Creates World Obstacles
+ * @param {string} src - Url of object image
+ * @param {number} h - Height of image in px
+ * @param {number} w - Width of image in px
+ * @param {number} startRow - Row number of this Obstacle Object
+ * @param {boolean} movesRight - Image moves to RIGHT if TRUE/ LEFT if FALSE
  */
 function Obstacle(src, h, w, startRow, movesRight) {
   this.image = new Image();
@@ -73,7 +87,7 @@ function Obstacle(src, h, w, startRow, movesRight) {
     this.xPos = canvas.width;
   }
   this.startXpos = this.xPos;
-  this.yPos = (startRow * 40);// + 40;
+  this.yPos = (startRow * BOX_SIZE);
   var v = this.randomVelocity();
   this.velocity = (movesRight ? v : -v);
 }
@@ -92,14 +106,19 @@ Obstacle.prototype.rightSide = function() {
 
 Obstacle.prototype.moveObstacle = function() {
   this.xPos += this.velocity;
-  if(this.xPos >canvas.width||this.rightSide()<0) {
+  if(this.xPos > canvas.width || this.rightSide()<0) {
     this.xPos = this.startXpos;
     var v = this.randomVelocity();
     this.velocity = (this.movesRight ? v : -v);
   }
-  this.drawObstacle();
 };
 
+
+
+/**
+ * Constructs top-most row of Obstacle Objects
+ * @return none
+ */
 Bug.buildObstacleEndZone = function() {
   // construct home row of obstacles. These are fixed (zero velocity)
   // with gaps where the bug can tuck in.
@@ -121,57 +140,109 @@ Bug.buildObstacleEndZone = function() {
   }
 };
 
+
+
+/**
+ * Build all rows between ENDZONE and HOME ROW
+ * @param {*} rowNum - Number assigned to Object rows
+ */
 Bug.buildObstacleRow = function(rowNum) {
   Bug.allObstacles[rowNum][0] = (new Obstacle('assets/binary-9 copy.png', 36, 227, rowNum, !!(rowNum%2)));
 };
 
-function detectCollision() {
-  var bugRow = Bug.player.bugRowNum();
-  //oi = obstacle index
-  var oi = bugRow; // -1
-  if (Bug.allObstacles[oi]) {
-    for (var i = 0; i < Bug.allObstacles[oi].length; i++) {
-      var impactLeft = Bug.player.xPos >= Bug.allObstacles[oi][i].xPos && Bug.player.xPos <= Bug.allObstacles[oi][i].rightSide();
-      var impactRight = Bug.player.rightSide() >= Bug.allObstacles[oi][i].xPos && Bug.player.rightSide() <= Bug.allObstacles[oi][i].rightSide();
-      //if we get a valid row number, then we evaluate below if statement
+
+
+/**
+ * Detect if Bug object contacts with any Obstacle object
+ * @return {boolean}  - TRUE if obejcts collide / FALSE if they do not
+ */
+Bug.detectCollision = function() {
+  var bugRow = Bug.player.bugRowNum(); //Retrieve Row that Bug is currently on  
+  if (Bug.allObstacles[bugRow]) {
+    for (var i = 0; i < Bug.allObstacles[bugRow].length; i++) {
+      var impactLeft = Bug.player.xPos >= Bug.allObstacles[bugRow][i].xPos && Bug.player.xPos <= Bug.allObstacles[bugRow][i].rightSide();
+      var impactRight = Bug.player.rightSide() >= Bug.allObstacles[bugRow][i].xPos && Bug.player.rightSide() <= Bug.allObstacles[bugRow][i].rightSide();
       if (impactLeft||impactRight) {
-        console.log('bugRow',bugRow);
-        console.log('Impact! Bug.player', Bug.player.xPos,Bug.player.rightSide(),'obstacle', Bug.allObstacles[oi][i].xPos,Bug.allObstacles[oi][i].rightSide());
         return true;
       }
     }
   }
   return false;
-}
+};
 
-//interval timer handler
-Bug.drawObstacles = function(){
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  for (var i = 0; i < Bug.allObstacles.length; i++) {
+
+
+/**
+ * TODO - ADD GAME HUD
+ * Render Game - Draws All Objects to Canvas on Interval Timer
+ */
+Bug.renderGame = function(){
+  ctx.clearRect(0, 0, canvas.width, canvas.height); //Clear Canvas
+  for (var i = 0; i < Bug.allObstacles.length; i++) { //Move and Draw Obstacles
     for (var j = 0; j < Bug.allObstacles[i].length; j++) {
       Bug.allObstacles[i][j].moveObstacle();
+      Bug.allObstacles[i][j].drawObstacle();
     }
   }
-  Bug.player.drawBug();
-  if (detectCollision()) {
-    Bug.handleCollision();
+  ctx.fillText('Time:' + Bug.clock, 15, 475); //Draw countdown clock
+  Bug.player.drawBug(); //Draw Bug
+
+  if (Bug.detectCollision()) { //Detect Collisions
+    Bug.loseState();
   }
 };
 
-Bug.handleCollision = function() {
-  console.log('GAME OVER. YOU LOSE.');
+
+/**
+ * This is where losing-specific things happen
+ */
+Bug.loseState = function() {
   Bug.gameOver = true;
-  window.clearInterval(Bug.frameRateID);
-  window.removeEventListener('keypress', Bug.keypressListener);
+  console.log('GAME OVER. YOU LOSE.');
+  Bug.stopGame();
 };
 
-Bug.keypressListener = function(event) {
-  Bug.player.moveBug(event);
-};
+/**
+ * This is where winning-specific things happen
+ */
+Bug.winState = function() {
+  console.log('You got into Production!');
+  Bug.stopGame();
+}
 
 
-// Draw bug and game field on window load and play game!
-window.onload = function() {
+/**
+ * END OF GAME BEHAVIORS
+ */
+Bug.stopGame = function() {
+  Bug.renderGame();
+  window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
+  window.clearInterval(Bug.clockRate); //Stop Timer
+}
+
+
+/**
+ * Update Countdown Clock
+ * @return {number} Bug.clock - Number of seconds left in gameplay
+ */
+Bug.clockTime = function() {
+  Bug.clock--;
+  if (Bug.clock === 0) {
+    console.log('Ran out of time');
+    Bug.loseState();
+  }
+  return Bug.clock;
+}
+
+
+/**
+ * LOCIC  - Runs on page load
+ */
+window.onload = function() {  
+  Bug.clock = TIME_LIMIT;
+  Bug.keypressListener = function(event) {
+    Bug.player.moveBug(event);
+  };
   Bug.allObstacles = []; //; Bug.allObstacles[0]=[]; //Holds all obstacles on screen
   Bug.buildObstacleEndZone();
   for (var i = 1; i < 11; i++) {
@@ -179,10 +250,8 @@ window.onload = function() {
     Bug.buildObstacleRow(i);
   }
   Bug.player = new Bug();
-  Bug.drawObstacles();
-  // Bug.player.drawBug();
-  //listener for keypresses
-  window.addEventListener('keypress', Bug.keypressListener);
-  // var intervalID = window.setInterval(drawObstacles, 500);
-  Bug.frameRateID = window.setInterval(Bug.drawObstacles, 33);
+  Bug.renderGame();
+  window.addEventListener('keypress', Bug.keypressListener); //Event Listener for KEY PRESSES
+  Bug.clockRate = window.setInterval(Bug.clockTime, 1000); //Clock Interval Timer
+  Bug.frameRateID = window.setInterval(Bug.renderGame, 33); //Render Frame Rate
 };
