@@ -2,7 +2,7 @@
 
 //Variables
 var BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
-var TIME_LIMIT = 10; //Amount of time allowed to play game
+var TIME_LIMIT = 30; //Amount of time allowed to play game
 var canvas = document.getElementById('myCanvas'); //Canvas HTML location
 var ctx = canvas.getContext('2d'); //2 dimensional canvas rendering
 ctx.font = '30px Arial';
@@ -10,6 +10,8 @@ ctx.fillStyle = '#00ff00';
 Bug.gameOver = false; //Game State
 
 
+
+Bug.level = 1;
 
 /**
  * BUG Constructor - Create Bug Object
@@ -84,9 +86,12 @@ function Obstacle(src, h, w, startRow, movesRight) {
     this.xPos = canvas.width;
   }
   this.startXpos = this.xPos;
+
   this.yPos = (startRow * BOX_SIZE);
-  var v = this.randomVelocity();
-  this.velocity = (movesRight ? v : -v);
+  if (Bug.level > 3) {
+    var v = this.randomVelocity();
+    this.velocity = (movesRight ? v : -v);
+  }
 }
 
 Obstacle.prototype.randomVelocity = function() {
@@ -105,8 +110,10 @@ Obstacle.prototype.moveObstacle = function() {
   this.xPos += this.velocity;
   if(this.xPos > canvas.width || this.rightSide()<0) {
     this.xPos = this.startXpos;
-    var v = this.randomVelocity();
-    this.velocity = (this.movesRight ? v : -v);
+    if (Bug.level > 3) {
+      var v = this.randomVelocity();
+      this.velocity = (this.movesRight ? v : -v);
+    }
   }
 };
 
@@ -125,12 +132,10 @@ Bug.buildObstacleEndZone = function() {
   Bug.allObstacles[0].push(new Obstacle('assets/binary-156px.png',36,156,0,true));
   Bug.allObstacles[0].push(new Obstacle('assets/binary-116px.png',36,116,0,true));
   Bug.allObstacles[0].push(new Obstacle('assets/binary-118px.png',36,118,0,true));
-  // Bug.allObstacles[0].push(new Obstacle('assets/binary-75px.png',36,75,0,true));
   Bug.allObstacles[0][0].xPos = 0; // + 118+44 = 160
   Bug.allObstacles[0][1].xPos = 162; //162; //+160+40 = 360
   Bug.allObstacles[0][2].xPos = 362; //+120+40 = 520
   Bug.allObstacles[0][3].xPos = 522; //+75+50 = 580
-  // Bug.allObstacles[0][4].xPos = 580;
   for (var i = 0; i < Bug.allObstacles[0].length; i++) {
     Bug.allObstacles[0][i].velocity = 0;
     Bug.allObstacles[0][i].yPos = 0;
@@ -144,7 +149,15 @@ Bug.buildObstacleEndZone = function() {
  * @param {*} rowNum - Number assigned to Object rows
  */
 Bug.buildObstacleRow = function(rowNum) {
-  Bug.allObstacles[rowNum][0] = (new Obstacle('assets/binary-9 copy.png', 36, 227, rowNum, !!(rowNum%2)));
+  console.log('row',rowNum);
+  var trains = Bug.buildObsTrain(!!(rowNum%2));
+  for (var t = 0; t < trains.length; t++) {
+    Bug.allObstacles[rowNum][t] = (new Obstacle(
+      trains[t].filepath, 36, trains[t].width, rowNum, !!(rowNum%2)));
+    Bug.allObstacles[rowNum][t].velocity = trains[t].velocity;
+    Bug.allObstacles[rowNum][t].xPos = trains[t].xPos;
+    // console.log('B.O.R Row',rowNum,'obs',Bug.allObstacles[rowNum][t]);
+  }
 };
 
 
@@ -203,6 +216,22 @@ Bug.loseState = function() {
   Bug.stopGame();
 };
 
+/*
+This is where scoring happens
+*/
+
+Bug.displayScore = function() {
+  var rowScore = 100*(11 - Bug.player.yPos/BOX_SIZE);
+  var finalRowBonus = 0;
+  if (Bug.player.yPos/BOX_SIZE === 0) {
+    finalRowBonus = 500;
+  }
+  var timeBonus = Bug.clock*10;
+  var totalScore = rowScore + finalRowBonus + timeBonus;
+  ctx.fillText('Score: ' + totalScore, canvas.width/2, canvas.height/2);
+  return totalScore;
+};
+
 /**
  * This is where winning-specific things happen
  */
@@ -213,6 +242,64 @@ Bug.winState = function() {
 };
 
 
+
+Bug.minCar = 2;
+Bug.filenames = ['assets/binary-80px.png',
+  'assets/binary-120px.png',
+  'assets/binary-160px.png',
+  'assets/binary-200px.png',
+  'assets/binary-240px.png',
+  'assets/binary-280px.png'];
+Bug.maxSeparation = [8, 7, 6, 5, 5, 4, 4, 4, 4, 4];
+Bug.minSeparation = [6, 5, 5, 4, 3, 3, 3, 2, 2, 2];
+Bug.maxObsLength = [4, 4, 4, 5, 5, 5, 6, 6, 6, 6];
+Bug.minObsLength = [4, 4, 3, 3, 3, 2, 2, 2, 2, 2];
+Bug.maxVelocity = [5, 5, 6, 6, 6, 7, 7, 8, 9, 10];
+Bug.minVelocity = [2, 2, 2, 3, 3, 4, 4, 4, 5, 6];
+
+Bug.randInRange = function(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+};
+
+Bug.buildMetaTrain = function() {
+  var trainLength = 0;
+  var car=[], space=[];
+  var i = 0;
+  do {
+    car[i] = Bug.randInRange(Bug.minObsLength[Bug.level], Bug.maxObsLength[Bug.level]);
+    space[i] = Bug.randInRange(Bug.minSeparation[Bug.level], Bug.maxSeparation[Bug.level]);
+    trainLength += (car[i] + space[i]);
+    i++;
+  } while (trainLength <= canvas.width/Bug.BOX_SIZE);
+  return [car, space];
+};
+
+Bug.randomVelocity = function() {
+  return Math.ceil(Math.random()*5);
+};
+
+Bug.Traincar = function(width, xPos, velocity){
+  this.width = width;
+  this.xPos = xPos;
+  this.velocity = velocity;
+  this.filepath = Bug.filenames[this.width/BOX_SIZE - Bug.minCar];
+};
+
+Bug.buildObsTrain = function(movesRight) {
+  var xPos = (movesRight ? 0 : 640) + (Bug.randInRange(50,200)*(movesRight?1:-1));
+  var metaTrain = Bug.buildMetaTrain();
+  var car = metaTrain[0];
+  var space = metaTrain[1];
+  var train = [];
+  var v = Bug.randInRange(Bug.minVelocity[Bug.level], Bug.maxVelocity[Bug.level]) * (movesRight ? 1 : -1);
+  for (var k = 0; k < car.length; k++) {
+    train[k] = new Bug.Traincar(car[k]*BOX_SIZE, xPos, v);
+    xPos += ((train[k].width + space[k]*BOX_SIZE) * (movesRight ? 1 : -1));
+  }
+  console.log(car, space, train);
+  return train;
+};
+
 /**
  * END OF GAME BEHAVIORS
  */
@@ -220,7 +307,10 @@ Bug.stopGame = function() {
   console.log('Stop Game Triggered');
   window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
   window.clearInterval(Bug.clockRate); //Stop Timer
+
   window.document.removeEventListener('keypress', Bug.keypressListener);
+  Bug.displayScore();
+
 };
 
 /**
@@ -235,6 +325,7 @@ Bug.clockTime = function() {
   }
   return Bug.clock;
 };
+
 
 
 /**
