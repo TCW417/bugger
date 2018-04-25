@@ -2,11 +2,14 @@
 
 //Variables
 var BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
+var TIME_LIMIT = 10; //Amount of time allowed to play game
 var canvas = document.getElementById('myCanvas'); //Canvas HTML location
 var ctx = canvas.getContext('2d'); //2 dimensional canvas rendering
 ctx.font = "30px Arial";
 ctx.fillStyle = '#00ff00';
 Bug.gameOver = false; //Game State
+
+
 
 /**
  * BUG Constructor - Create Bug Object
@@ -16,8 +19,8 @@ function Bug() {
   this.image.src = 'assets/bug.png';
   this.width = BOX_SIZE;
   this.height = BOX_SIZE;
-  this.xPos = (canvas.width/2)-(this.width);
-  this.yPos = canvas.height- this.height;
+  this.xPos = (canvas.width/2) - (this.width);
+  this.yPos = canvas.height - this.height;
 }
 
 Bug.prototype.bugRowNum = function() {
@@ -56,6 +59,10 @@ Bug.prototype.moveBug = function(event) {
   }
   console.log('bug at',this.xPos,this.rightSide())
   console.log('The bug is on row ',this.bugRowNum());
+
+  if(this.yPos === 0) {
+    Bug.winState();
+  }
 };
 
 
@@ -80,7 +87,7 @@ function Obstacle(src, h, w, startRow, movesRight) {
     this.xPos = canvas.width;
   }
   this.startXpos = this.xPos;
-  this.yPos = (startRow * 40);
+  this.yPos = (startRow * BOX_SIZE);
   var v = this.randomVelocity();
   this.velocity = (movesRight ? v : -v);
 }
@@ -99,7 +106,7 @@ Obstacle.prototype.rightSide = function() {
 
 Obstacle.prototype.moveObstacle = function() {
   this.xPos += this.velocity;
-  if(this.xPos >canvas.width||this.rightSide()<0) {
+  if(this.xPos > canvas.width || this.rightSide()<0) {
     this.xPos = this.startXpos;
     var v = this.randomVelocity();
     this.velocity = (this.movesRight ? v : -v);
@@ -137,7 +144,7 @@ Bug.buildObstacleEndZone = function() {
 
 /**
  * Build all rows between ENDZONE and HOME ROW
- * @param {*} rowNum 
+ * @param {*} rowNum - Number assigned to Object rows
  */
 Bug.buildObstacleRow = function(rowNum) {
   Bug.allObstacles[rowNum][0] = (new Obstacle('assets/binary-9 copy.png', 36, 227, rowNum, !!(rowNum%2)));
@@ -155,10 +162,7 @@ Bug.detectCollision = function() {
     for (var i = 0; i < Bug.allObstacles[bugRow].length; i++) {
       var impactLeft = Bug.player.xPos >= Bug.allObstacles[bugRow][i].xPos && Bug.player.xPos <= Bug.allObstacles[bugRow][i].rightSide();
       var impactRight = Bug.player.rightSide() >= Bug.allObstacles[bugRow][i].xPos && Bug.player.rightSide() <= Bug.allObstacles[bugRow][i].rightSide();
-      //if we get a valid row number, then we evaluate below if statement
       if (impactLeft||impactRight) {
-        console.log('bugRow',bugRow);
-        console.log('Impact! Bug.player', Bug.player.xPos,Bug.player.rightSide(),'obstacle', Bug.allObstacles[bugRow][i].xPos,Bug.allObstacles[bugRow][i].rightSide());
         return true;
       }
     }
@@ -180,46 +184,62 @@ Bug.renderGame = function(){
       Bug.allObstacles[i][j].drawObstacle();
     }
   }
-
   ctx.fillText('Time:' + Bug.clock, 15, 475); //Draw countdown clock
-
-
-
   Bug.player.drawBug(); //Draw Bug
+
   if (Bug.detectCollision()) { //Detect Collisions
-    Bug.endState();
+    Bug.loseState();
   }
 };
 
 
 /**
- * Call End-State Conditions
+ * This is where losing-specific things happen
  */
-Bug.endState = function() {
+Bug.loseState = function() {
   Bug.gameOver = true;
   console.log('GAME OVER. YOU LOSE.');
-  window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
-  window.clearInterval(Bug.clockRate); //Stop Timer
+  Bug.stopGame();
 };
 
+/**
+ * This is where winning-specific things happen
+ */
+Bug.winState = function() {
+  console.log('You got into Production!');
+  Bug.stopGame();
+}
 
+
+/**
+ * END OF GAME BEHAVIORS
+ */
+Bug.stopGame = function() {
+  Bug.renderGame();
+  window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
+  window.clearInterval(Bug.clockRate); //Stop Timer
+}
+
+
+/**
+ * Update Countdown Clock
+ * @return {number} Bug.clock - Number of seconds left in gameplay
+ */
 Bug.clockTime = function() {
-  --Bug.clock;
-
+  Bug.clock--;
   if (Bug.clock === 0) {
-
     console.log('Ran out of time');
-    Bug.endState();
+    Bug.loseState();
   }
-
   return Bug.clock;
 }
+
 
 /**
  * LOCIC  - Runs on page load
  */
 window.onload = function() {  
-  Bug.clock = 3; //Seconds until game over
+  Bug.clock = TIME_LIMIT;
   Bug.keypressListener = function(event) {
     Bug.player.moveBug(event);
   };
@@ -231,9 +251,7 @@ window.onload = function() {
   }
   Bug.player = new Bug();
   Bug.renderGame();
-  window.addEventListener('keypress', Bug.keypressListener);
-
-
-  Bug.clockRate = window.setInterval(Bug.clockTime, 1000);
-  Bug.frameRateID = window.setInterval(Bug.renderGame, 33);
+  window.addEventListener('keypress', Bug.keypressListener); //Event Listener for KEY PRESSES
+  Bug.clockRate = window.setInterval(Bug.clockTime, 1000); //Clock Interval Timer
+  Bug.frameRateID = window.setInterval(Bug.renderGame, 33); //Render Frame Rate
 };
