@@ -59,7 +59,7 @@ Bug.prototype.moveBug = function(event) {
  */
 function Obstacle(src, h, w, startRow, movesRight) {
   this.image = new Image();
-  this.image.src = 'assets/binary-9 copy.png';
+  this.image.src = src;
   // this.image.height = ;
   this.width = w;
   this.height = h;
@@ -97,43 +97,69 @@ Obstacle.prototype.moveObstacle = function() {
   this.drawObstacle();
 };
 
+Bug.buildObstacleHomeRow = function() {
+  // construct home row of obstacles. These are fixed (zero velocity)
+  // with gaps where the bug can tuck in.
+  var fudge = 3;
+  Bug.allObstacles.push([]);
+  Bug.allObstacles[0].push(new Obstacle('assets/binary-75px.png',36,75,0,true));
+  Bug.allObstacles[0].push(new Obstacle('assets/binary-75px.png',36,75,0,true));
+  Bug.allObstacles[0].push(new Obstacle('assets/binary-155px.png',36,155,0,true));
+  Bug.allObstacles[0].push(new Obstacle('assets/binary-75px.png',36,75,0,true));
+  Bug.allObstacles[0].push(new Obstacle('assets/binary-75px.png',36,75,0,true));
+  Bug.allObstacles[0][0].xPos = 0; //+75+50 = 125
+  Bug.allObstacles[0][1].xPos = 125; //+75+50 = 250
+  Bug.allObstacles[0][2].xPos = 250; //+155+50 = 455
+  Bug.allObstacles[0][3].xPos = 455; //+75+50 = 580
+  Bug.allObstacles[0][4].xPos = 580;
+  for (var i = 0; i < Bug.allObstacles[0].length; i++) {
+    Bug.allObstacles[0][i].velocity = 0;
+    Bug.allObstacles[0][i].yPos = 0;
+  }
+};
+
+Bug.buildObstacleRow = function(rowNum) {
+  Bug.allObstacles[rowNum][0] = (new Obstacle('assets/binary-9 copy.png', 36, 227, rowNum, !!(rowNum%2)));
+};
+
 function detectCollision() {
   var bugRow = Bug.player.bugRowNum();
-
   //oi = obstacle index
-  var oi = bugRow-1;
+  var oi = bugRow; // -1
   if (Bug.allObstacles[oi]) {
-    var impactLeft = Bug.player.xPos >= Bug.allObstacles[oi].xPos && Bug.player.xPos <= Bug.allObstacles[oi].rightSide();
-    var impactRight = Bug.player.rightSide() >= Bug.allObstacles[oi].xPos && Bug.player.rightSide() <= Bug.allObstacles[oi].rightSide();
-    //if we get a valid row number, then we evaluate below if statement
-    if (impactLeft||impactRight) {
-      console.log('Impact! Bug.player', Bug.player.xPos,Bug.player.rightSide(),'obstacle', Bug.allObstacles[oi].xPos,Bug.allObstacles[oi].rightSide());
-      // console.log('Same row!');
-      return true;
+    for (var i = 0; i < Bug.allObstacles[oi].length; i++) {
+      var impactLeft = Bug.player.xPos >= Bug.allObstacles[oi][i].xPos && Bug.player.xPos <= Bug.allObstacles[oi][i].rightSide();
+      var impactRight = Bug.player.rightSide() >= Bug.allObstacles[oi][i].xPos && Bug.player.rightSide() <= Bug.allObstacles[oi][i].rightSide();
+      //if we get a valid row number, then we evaluate below if statement
+      if (impactLeft||impactRight) {
+        console.log('Impact! Bug.player', Bug.player.xPos,Bug.player.rightSide(),'obstacle', Bug.allObstacles[oi][i].xPos,Bug.allObstacles[oi][i].rightSide());
+        return false;
+      }
     }
   }
   return false;
 }
 
 //interval timer handler
-function drawObstacles(e){
+Bug.drawObstacles = function(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  for (var obj of Bug.allObstacles) {
-    obj.moveObstacle();
-    // obj.drawObstacle();
-    Bug.player.drawBug();
+  for (var i = 0; i < Bug.allObstacles.length; i++) {
+    for (var j = 0; j < Bug.allObstacles[i].length; j++) {
+      Bug.allObstacles[i][j].moveObstacle();
+    }
   }
+  Bug.player.drawBug();
   if (detectCollision()) {
-    gameOver();
+    Bug.handleCollision();
   }
-}
+};
 
-function gameOver() {
+Bug.handleCollision = function() {
   console.log('GAME OVER. YOU LOSE.');
   Bug.gameOver = true;
-  window.clearInterval(Bug.intervalID);
+  window.clearInterval(Bug.frameRateID);
   window.removeEventListener('keypress', Bug.keypressListener);
-}
+};
 
 Bug.keypressListener = function(event) {
   Bug.player.moveBug(event);
@@ -142,16 +168,19 @@ Bug.keypressListener = function(event) {
 
 // Draw bug and game field on window load and play game!
 window.onload = function() {
-  Bug.allObstacles = []; //Holds all obstacles on screen
-  for (var i = 0; i < 10; i++) {
-    Bug.allObstacles.push(new Obstacle('assets/binary-9 copy.png', 36, 227, i, !!(i%2)));
-  }
+  Bug.allObstacles = []; //; Bug.allObstacles[0]=[]; //Holds all obstacles on screen
+  Bug.buildObstacleHomeRow();
+  // for (var i = 1; i < 10; i++) {
+  //   Bug.allObstacles.push([]);
+  //   Bug.buildObstacleRow(i);
+  // }
   Bug.player = new Bug();
-  Bug.player.drawBug();
+  Bug.drawObstacles();
+  // Bug.player.drawBug();
   //listener for keypresses
   window.addEventListener('keypress', Bug.keypressListener);
   // var intervalID = window.setInterval(drawObstacles, 500);
-  Bug.intervalID = window.setInterval(drawObstacles, 33);
+  Bug.frameRateID = window.setInterval(Bug.drawObstacles, 33);
 };
 
 
