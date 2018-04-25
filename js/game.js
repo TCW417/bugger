@@ -71,7 +71,7 @@ function Obstacle(src, h, w, startRow, movesRight) {
     this.xPos = canvas.width;
   }
   this.startXpos = this.xPos;
-  this.yPos = (startRow * 40) + 40;
+  this.yPos = (startRow * 40);// + 40;
   var v = this.randomVelocity();
   this.velocity = (movesRight ? v : -v);
 }
@@ -98,7 +98,7 @@ Obstacle.prototype.moveObstacle = function() {
   this.drawObstacle();
 };
 
-Bug.buildObstacleHomeRow = function() {
+Bug.buildObstacleEndZone = function() {
   // construct home row of obstacles. These are fixed (zero velocity)
   // with gaps where the bug can tuck in.
 
@@ -133,6 +133,7 @@ function detectCollision() {
       var impactRight = Bug.player.rightSide() >= Bug.allObstacles[oi][i].xPos && Bug.player.rightSide() <= Bug.allObstacles[oi][i].rightSide();
       //if we get a valid row number, then we evaluate below if statement
       if (impactLeft||impactRight) {
+        console.log('bugRow',bugRow);
         console.log('Impact! Bug.player', Bug.player.xPos,Bug.player.rightSide(),'obstacle', Bug.allObstacles[oi][i].xPos,Bug.allObstacles[oi][i].rightSide());
         return true;
       }
@@ -170,8 +171,8 @@ Bug.keypressListener = function(event) {
 // Draw bug and game field on window load and play game!
 window.onload = function() {
   Bug.allObstacles = []; //; Bug.allObstacles[0]=[]; //Holds all obstacles on screen
-  Bug.buildObstacleHomeRow();
-  for (var i = 1; i < 10; i++) {
+  Bug.buildObstacleEndZone();
+  for (var i = 1; i < 11; i++) {
     Bug.allObstacles.push([]);
     Bug.buildObstacleRow(i);
   }
