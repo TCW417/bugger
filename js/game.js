@@ -237,10 +237,36 @@ Bug.displayScore = function() {
  */
 Bug.winState = function() {
   console.log('Win State Triggered');
-  Bug.stopGame();
   Bug.createFrame(); //renders one more frame after game cease
 };
 
+
+
+/**
+ * END OF GAME BEHAVIORS
+ */
+Bug.stopGame = function() {
+  console.log('Stop Game Triggered');
+  window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
+  window.clearInterval(Bug.clockRate); //Stop Timer
+
+  window.document.removeEventListener('keypress', Bug.keypressListener);
+  Bug.displayScore();
+
+};
+
+/**
+ * Update Countdown Clock
+ * @return {number} Bug.clock - Number of seconds left in gameplay
+ */
+Bug.clockTime = function() {
+  Bug.clock--;
+  if (Bug.clock === 0) {
+    console.log('Time End Lose State Triggered');
+    Bug.loseState();
+  }
+  return Bug.clock;
+};
 
 
 Bug.minCar = 2;
@@ -299,33 +325,6 @@ Bug.buildObsTrain = function(movesRight) {
   console.log(car, space, train);
   return train;
 };
-
-/**
- * END OF GAME BEHAVIORS
- */
-Bug.stopGame = function() {
-  console.log('Stop Game Triggered');
-  window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
-  window.clearInterval(Bug.clockRate); //Stop Timer
-
-  window.document.removeEventListener('keypress', Bug.keypressListener);
-  Bug.displayScore();
-
-};
-
-/**
- * Update Countdown Clock
- * @return {number} Bug.clock - Number of seconds left in gameplay
- */
-Bug.clockTime = function() {
-  Bug.clock--;
-  if (Bug.clock === 0) {
-    console.log('Time End Lose State Triggered');
-    Bug.loseState();
-  }
-  return Bug.clock;
-};
-
 
 
 /**
