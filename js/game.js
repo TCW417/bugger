@@ -218,6 +218,22 @@ Bug.loseState = function() {
   Bug.stopGame();
 };
 
+/*
+This is where scoring happens
+*/
+
+Bug.displayScore = function() {
+  var rowScore = 100*(11 - Bug.player.yPos/BOX_SIZE);
+  var finalRowBonus = 0;
+  if (Bug.player.yPos/BOX_SIZE === 0) {
+    finalRowBonus = 500;
+  }
+  var timeBonus = Bug.clock*10;
+  var totalScore = rowScore + finalRowBonus + timeBonus;
+  ctx.fillText('Score: ' + totalScore, canvas.width/2, canvas.height/2);
+  return totalScore;
+};
+
 /**
  * This is where winning-specific things happen
  */
@@ -292,6 +308,7 @@ Bug.stopGame = function() {
   window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
   window.clearInterval(Bug.clockRate); //Stop Timer
   Bug.renderGame(); //renders one more frame after game cease
+  Bug.displayScore();
 };
 
 
