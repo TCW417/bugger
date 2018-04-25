@@ -9,9 +9,10 @@ ctx.font = '30px Arial';
 ctx.fillStyle = '#00ff00';
 Bug.gameOver = false; //Game State
 
-
-
-Bug.level = 1;
+var ENDZONE_SLOTS = 3; //slots in level endzone
+Bug.inEndZone = 0; // counter of bugs in endzone
+var MAX_LEVEL = 9;
+Bug.level = 1; // current game level
 
 /**
  * BUG Constructor - Create Bug Object
@@ -224,9 +225,17 @@ Bug.loseState = function() {
 Bug.winState = function() {
   console.log('You got into Production!');
   Bug.stopGame();
+  Bug.inEndZone++; // increment bugs in endzone
+  if (Bug.inEndZone === ENDZONE_SLOTS) {
+    console.log('winState: end of level');
+    Bug.level++;
+    Bug.inEndZone = 0;
+    Bug.displayScore();
+    // delay a bit then start next level
+  }
+  console.log('starting next level...');
+  setTimeout(Bug.startgame, 5000);
 };
-
-
 
 Bug.minCar = 2;
 Bug.filenames = ['assets/binary-80px.png',
@@ -308,7 +317,7 @@ Bug.clockTime = function() {
   return Bug.clock;
 };
 
-
+Bug.startGame = window.onload; // alias for the onload function
 
 /**
  * LOCIC  - Runs on page load
