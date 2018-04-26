@@ -43,7 +43,6 @@ Bug.prototype.clearBug = function() {
 };
 
 Bug.prototype.moveBug = function(event) {
-  if(Bug.gameOver) return;
   if(event.keyCode === 119 && this.yPos > 0) {
     this.yPos -= BOX_SIZE;
     this.image.src = 'assets/bug.png';
@@ -176,7 +175,6 @@ Bug.detectCollision = function() {
       var impactLeft = Bug.player.xPos >= Bug.allObstacles[bugRow][i].xPos && Bug.player.xPos <= Bug.allObstacles[bugRow][i].rightSide();
       var impactRight = Bug.player.rightSide() >= Bug.allObstacles[bugRow][i].xPos && Bug.player.rightSide() <= Bug.allObstacles[bugRow][i].rightSide();
       if (impactLeft||impactRight) {
-        Bug.loseState();
         return true;
       }
     }
@@ -191,22 +189,22 @@ Bug.detectCollision = function() {
  * Render Game - Draws All Objects to Canvas on Interval Timer
  */
 Bug.renderGame = function(){
+  Bug.createFrame();
+  if(Bug.detectCollision()) {
+    Bug.loseState();
+  }
+};
+
+Bug.createFrame = function () {
   ctx.clearRect(0, 0, canvas.width, canvas.height); //Clear Canvas
-
-
   for (var i = 0; i < Bug.allObstacles.length; i++) { //Move and Draw Obstacles
     for (var j = 0; j < Bug.allObstacles[i].length; j++) {
       Bug.allObstacles[i][j].moveObstacle();
       Bug.allObstacles[i][j].drawObstacle();
     }
   }
-
-
   ctx.fillText('Time:' + Bug.clock, 15, 475); //Draw countdown clock
-
-
   Bug.player.drawBug(); //Draw Bug
-  Bug.detectCollision();
 };
 
 
@@ -215,8 +213,24 @@ Bug.renderGame = function(){
  */
 Bug.loseState = function() {
   Bug.gameOver = true;
-  console.log('GAME OVER. YOU LOSE.');
+  console.log('Lose State Triggered');
   Bug.stopGame();
+};
+
+/*
+This is where scoring happens
+*/
+
+Bug.displayScore = function() {
+  var rowScore = 100*(11 - Bug.player.yPos/BOX_SIZE);
+  var finalRowBonus = 0;
+  if (Bug.player.yPos/BOX_SIZE === 0) {
+    finalRowBonus = 500;
+  }
+  var timeBonus = Bug.clock*10;
+  var totalScore = rowScore + finalRowBonus + timeBonus;
+  ctx.fillText('Score: ' + totalScore, canvas.width/2, canvas.height/2);
+  return totalScore;
 };
 
 /**
@@ -235,6 +249,32 @@ Bug.winState = function() {
   }
   console.log('starting next level...');
   setTimeout(Bug.startgame, 5000);
+};
+
+/**
+ * END OF GAME BEHAVIORS
+ */
+Bug.stopGame = function() {
+  console.log('Stop Game Triggered');
+  window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
+  window.clearInterval(Bug.clockRate); //Stop Timer
+
+  window.document.removeEventListener('keypress', Bug.keypressListener);
+  Bug.displayScore();
+
+};
+
+/**
+ * Update Countdown Clock
+ * @return {number} Bug.clock - Number of seconds left in gameplay
+ */
+Bug.clockTime = function() {
+  Bug.clock--;
+  if (Bug.clock === 0) {
+    console.log('Time End Lose State Triggered');
+    Bug.loseState();
+  }
+  return Bug.clock;
 };
 
 Bug.minCar = 2;
