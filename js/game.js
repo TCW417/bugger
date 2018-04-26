@@ -135,12 +135,12 @@ function Obstacle(src, h, w, startRow, movesRight) {
   this.yPos = (startRow * BOX_SIZE);
   if (Bug.level > 3) {
     var v = this.randomVelocity();
-    this.velocity = (movesRight ? v : -v);
+    this.velocity = (this.movesRight ? v : -v);
   }
 }
 
 Obstacle.prototype.randomVelocity = function() {
-  return Math.ceil(Math.random()*5);
+  return Math.ceil(Math.random()*6);
 };
 
 Obstacle.prototype.drawObstacle = function() {
@@ -419,6 +419,7 @@ Bug.loseState = function() {
     Bug.stopGame();
     Bug.createFrame();
     var score = Bug.displayScore();
+    Bug.level = 1;
     Bug.pauseGame();
     if (Bugger.scoreIsTopTen(score)) {
       Bugger.loadNewPage('newtop.html');
