@@ -7,6 +7,7 @@ var BUG_LIVES_QUEUE = 2; //Number of lives player gets before game over
 var INIT_CONTINUE_LEVEL = 0; //Died on level with lives remaining
 var INIT_NEW_GAME = 1; //Flag indicating start of new game
 var INIT_NEW_LEVEL = 2; //Flag indicating start of new level
+var DBG_DRAW_OBSTACLES = false; //set to false to disable obstacles
 var canvas = document.getElementById('myCanvas'); //Canvas HTML location
 var ctx = canvas.getContext('2d'); //2 dimensional canvas rendering
 ctx.font = '30px Arial'; //Text size and Font
@@ -27,6 +28,7 @@ Bug.maxObsLength = [4, 4, 4, 5, 5, 5, 6, 6, 6, 6];
 Bug.minObsLength = [4, 4, 3, 3, 3, 2, 2, 2, 2, 2];
 Bug.maxVelocity = [5, 5, 6, 6, 6, 7, 7, 8, 9, 10];
 Bug.minVelocity = [2, 2, 2, 3, 3, 4, 4, 4, 5, 6];
+
 var ENDZONE_SLOTS = 3; //slots in level endzone
 var ENDZONE_XPOS = [120, 320, 480];
 Bug.inEndZone = 0; // counter of bugs in endzone
@@ -67,13 +69,19 @@ Bug.prototype.moveBug = function(event) {
 
 
   if(event.keyCode === 119 && this.yPos > BOX_SIZE) {
+    //Bug is not in top row, go ahead an dmove it up
     this.yPos -= BOX_SIZE;
     this.image.src = 'assets/bug.png';
     Bug.ezUpCounter = 0;
   }
   if(event.keyCode === 119 && this.yPos === BOX_SIZE && ENDZONE_XPOS.includes(this.xPos) && !Bug.ezUpCounter) {
-    Bug.ezUpCounter++;
-  } else if (event.keyCode === 119 && Bug.ezUpCounter) {
+    //Bug moving up from beneath endzone and is in front of opening
+    if (!Bug.ezSlotIsFilled(this.xPos)) {
+      //Bug is in front of an open slot but hasn't moved into it
+      Bug.ezUpCounter++;
+    }
+  } else if (event.keyCode === 119 && Bug.ezUpCounter && !Bug.ezSlotIsFilled(this.xPos)) {
+    //Bug moving up into open endzone slot.
     console.log('made it home!');
     this.image.src = 'assets/bug.png';
     Bug.fillEndzoneSlot(this.xPos);
@@ -354,6 +362,12 @@ Bug.fillEndzoneSlot = function(xPos){
   Bug.ezBugs[Bug.inEndZone].yPos = 0;
 };
 
+Bug.ezSlotIsFilled = function(xPos) {
+  var slotFilled = false;
+  for (var i of Bug.ezBugs) {
+    if (i.xPos === xPos) return true;
+  }
+};
 
 /**
  * This is where winning-specific things happen
@@ -382,7 +396,7 @@ Bug.winState = function() {
     Bug.startGameInitLevel = INIT_NEW_LEVEL;
   }
   // delay a bit then start next level
-  window.setTimeout(function(){},2000);
+  //window.setTimeout(function(){},2000);
   Bug.startGame(Bug.startGameInitLevel);
 };
 
@@ -464,9 +478,11 @@ Bug.startGame = function(initFlag) {
     // };
     Bug.allObstacles = []; //Holds all obstacles on screen
     Bug.buildObstacleEndZone();
-    for (var i = 1; i < 11; i++) {
-      Bug.allObstacles.push([]);
-      Bug.buildObstacleRow(i);
+    if (DBG_DRAW_OBSTACLES) {
+      for (var i = 1; i < 11; i++) {
+        Bug.allObstacles.push([]);
+        Bug.buildObstacleRow(i);
+      }
     }
   }
   if (initFlag === INIT_NEW_GAME){
