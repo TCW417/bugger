@@ -32,12 +32,14 @@ h4 {
   clear: both;
   height: 330px;
   padding-bottom: 30px;
-
 }
 .bio img {
   display: block;
   float: left;
-  margin: 20px 20px;
+  height: 300px;
+  width: 300px;
+  border-radius: 6px;
+  margin: 25px 20px;
   z-index: 10;
 }
 
@@ -50,7 +52,9 @@ h4 {
   padding: 28px;
   background-size: auto;
   width: 450px;
+  height: 245px;
   float: right;
+  overflow: scroll;
 }
 body {
   width: 100%;
@@ -199,6 +203,7 @@ table tr td{
   position: absolute;
   left: 310px;
   top: 110px;
+  border-radius: 10px;
 }
 
 footer {
