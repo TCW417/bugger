@@ -30,7 +30,7 @@ NewTop.getPlayerName = function(e) {
 };
 
 //Get user's score out of local storage
-NewTop.score = parseInt(localStorage.getItem('score')) || 995;
+NewTop.score = parseInt(localStorage.getItem('score')) || 0;
 
 //Add score to html page
 NewTop.scoreEl = document.getElementById('player-score');

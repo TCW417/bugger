@@ -9,7 +9,7 @@ p {
 }
 
 h2 {
-  background-color: #4900ff;opacity: .6;
+  background-color: #4900ff;opacity: .8;
   text-align: center;
   line-height: 1.5em;
   border: 6px inset #ff00c1;
@@ -28,33 +28,38 @@ h4 {
   font-size: 40px;
 }
 .bio {
-  display: block;
+  display: inline-block;
   clear: both;
   height: 330px;
   padding-bottom: 30px;
+  width: 100%;
 }
 .bio img {
-  display: block;
-  float: left;
+  display: inline-block;
+  vertical-align: top;
+
+  /* float: left; */
   height: 300px;
   width: 300px;
   border-radius: 6px;
   margin: 25px 20px;
-  z-index: 10;
+  /* z-index: 10; */
 }
 
 .bio p {
-  color: blue;
+  display: inline-block;
+  vertical-align: top;
+  color: rgb(30, 30, 180);
   margin-top: 25px;
   background-color: #ff00c1;opacity: .9;
   border-radius: 6px;
-  text-align: center;
-  padding: 28px;
+  text-align: justify;
+  padding: 15px;
   background-size: auto;
-  width: 450px;
-  height: 245px;
-  float: right;
-  overflow: scroll;
+  width: 60%;
+  height: 270px;
+  /* float: right; */
+  overflow-y: auto;
 }
 body {
   width: 100%;
@@ -119,7 +124,7 @@ fieldset#newTop input {
   border-radius: 10px;
 }
 main {
-  width: 56em;
+  width: 90%;
   margin: auto;
 }
 #urScore {
@@ -128,10 +133,19 @@ main {
   font-size: 40px;
   text-align: center;
 }
-main div {
-  width: 40em;
-  margin: 0em auto;
+p#urScore {
+  height: 50px;
 }
+
+main div {
+  width: 90%;
+  margin: 0 auto;
+}
+
+div.bio {
+  display: inline-block;
+}
+
 ul#landing-menu {
   margin: 1em auto;
 }
@@ -206,7 +220,12 @@ table tr td{
   border-radius: 10px;
 }
 
+/* p button {
+  margin-bottom: 
+} */
+
 footer {
+  /* vertical-align: bottom; */
   display: block;
   width: 100%;
   height: 8em;
@@ -227,7 +246,7 @@ footer li {
 }
 
 footer li a {
-  color: #9600ff;
+  color: #2b0b42;
   padding: .5em;
   text-decoration: none;
 }

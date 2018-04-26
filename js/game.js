@@ -7,6 +7,7 @@ var LIVES_REMAINING = 2; //Number of lives player gets before game over
 var INIT_CONTINUE_LEVEL = 0; //Died on level with lives remaining
 var INIT_NEW_GAME = 1; //Flag indicating start of new game
 var INIT_NEW_LEVEL = 2; //Flag indicating start of new level
+var DBG_DRAW_OBSTACLES = true; //set to false to disable obstacles
 var canvas = document.getElementById('myCanvas'); //Canvas HTML location
 var ctx = canvas.getContext('2d'); //2 dimensional canvas rendering
 ctx.font = '30px Arial'; //Text size and Font
@@ -27,6 +28,7 @@ Bug.maxObsLength = [4, 4, 4, 5, 5, 5, 6, 6, 6, 6];
 Bug.minObsLength = [4, 4, 3, 3, 3, 2, 2, 2, 2, 2];
 Bug.maxVelocity = [5, 5, 6, 6, 6, 7, 7, 8, 9, 10];
 Bug.minVelocity = [2, 2, 2, 3, 3, 4, 4, 4, 5, 6];
+
 var ENDZONE_SLOTS = 3; //slots in level endzone
 var ENDZONE_XPOS = [120, 320, 480];
 Bug.inEndZone = 0; // counter of bugs in endzone
@@ -66,13 +68,19 @@ Bug.prototype.moveBug = function(event) {
 
 
   if(event.keyCode === 119 && this.yPos > BOX_SIZE) {
+    //Bug is not in top row, go ahead an dmove it up
     this.yPos -= BOX_SIZE;
     this.image.src = 'assets/bug.png';
     Bug.ezUpCounter = 0;
   }
   if(event.keyCode === 119 && this.yPos === BOX_SIZE && ENDZONE_XPOS.includes(this.xPos) && !Bug.ezUpCounter) {
-    Bug.ezUpCounter++;
-  } else if (event.keyCode === 119 && Bug.ezUpCounter) {
+    //Bug moving up from beneath endzone and is in front of opening
+    if (!Bug.ezSlotIsFilled(this.xPos)) {
+      //Bug is in front of an open slot but hasn't moved into it
+      Bug.ezUpCounter++;
+    }
+  } else if (event.keyCode === 119 && Bug.ezUpCounter && !Bug.ezSlotIsFilled(this.xPos)) {
+    //Bug moving up into open endzone slot.
     console.log('made it home!');
     this.image.src = 'assets/bug.png';
     Bug.fillEndzoneSlot(this.xPos);
@@ -97,7 +105,7 @@ Bug.prototype.moveBug = function(event) {
     Bug.ezUpCounter = 0;
   }
 
-  if(this.yPos === 0) { 
+  if(this.yPos === 0) {
     Bug.winState();
   }
 };
@@ -127,12 +135,12 @@ function Obstacle(src, h, w, startRow, movesRight) {
   this.yPos = (startRow * BOX_SIZE);
   if (Bug.level > 3) {
     var v = this.randomVelocity();
-    this.velocity = (movesRight ? v : -v);
+    this.velocity = (this.movesRight ? v : -v);
   }
 }
 
 Obstacle.prototype.randomVelocity = function() {
-  return Math.ceil(Math.random()*5);
+  return Math.ceil(Math.random()*6);
 };
 
 Obstacle.prototype.drawObstacle = function() {
@@ -312,20 +320,22 @@ Bug.createFrame = function () {
  */
 Bug.displayScore = function() {
   var totalScore = parseInt(JSON.parse(localStorage.getItem('score')) || 0);
-
-  var rowsCompleted = (Bug.level-1)*30 + Bug.inEndZone*10 + 
-    (10 - Bug.player.yPos/BOX_SIZE);
-  var rowScore = 100 * rowsCompleted; // 100 points per row completed
+  console.log('opening score', totalScore);
+  var rowsCompleted = (Bug.level-1)*30 + Bug.inEndZone*10 +
+    (11 - Bug.player.yPos/BOX_SIZE);
+  console.log('Bug.level-1',Bug.level-1,'Bug.inEndZone',Bug.inEndZone);
+  console.log('Bug.player.yPos',Bug.player.yPos,'rowsCompleted',rowsCompleted);
+  var rowScore = 10 * rowsCompleted; // 10 points per row completed
 
   // bonus for each bug parked in the end zone
-  var finalRowBonus = ((Bug.level-1)*3 + Bug.inEndZone) * 500;
-
+  var finalRowBonus = ((Bug.level-1)*3 + Bug.inEndZone) * 100;
+  console.log('final rows completed',finalRowBonus/100);
   //Bonus for time left on clock
   var timeBonus = 0;
   if (Bug.inEndZone > 0) {
     timeBonus = Bug.clock*10;
   }
-  
+
   totalScore += rowScore + finalRowBonus + timeBonus;
   localStorage.setItem('score',JSON.stringify(totalScore));
 
@@ -351,11 +361,17 @@ Bug.fillEndzoneSlot = function(xPos){
   Bug.ezBugs[Bug.inEndZone].yPos = 0;
 };
 
+Bug.ezSlotIsFilled = function(xPos) {
+  for (var i of Bug.ezBugs) {
+    if (i.xPos === xPos) return true;
+  }
+};
 
 /**
  * This is where winning-specific things happen
  */
 Bug.winState = function() {
+
   Bug.clock = TIME_LIMIT; // Reset Timer
   Bug.inEndZone++; //Increment bugs in endzone
   Bug.startGameInitLevel = INIT_CONTINUE_LEVEL; //Causes ezBugs and obstacles to stay
@@ -365,9 +381,11 @@ Bug.winState = function() {
   if (Bug.inEndZone === ENDZONE_SLOTS) { //Entered when level is complete
     Bug.level++; //Increases Level
     Bug.pauseGame();
+    Bug.displayScore();
     Bug.inEndZone = 0; //Resets bugs in endzone
     Bug.ezBugs = []; //Resets array bugs in endzone
     Bug.startGameInitLevel = INIT_NEW_LEVEL; //Clear bugs from en
+
   }
   if (Bug.level > MAX_LEVEL) { //Entered after you beat level 9
     console.log('winState: MAX LEVEL ACHIEVED!!!');
@@ -375,7 +393,8 @@ Bug.winState = function() {
     Bug.startGameInitLevel = INIT_NEW_LEVEL;
   }
 
-
+  // delay a bit then start next level
+  //window.setTimeout(function(){},2000);
   Bug.startGame(Bug.startGameInitLevel);
 };
 
@@ -384,7 +403,6 @@ Bug.winState = function() {
  * This is where losing-specific things happen
  */
 Bug.loseState = function() {
-
   if (Bug.bugLives.pop()) { // then we still have lives to play
     Bug.stopGame(); //Clear intervals
     
@@ -398,7 +416,8 @@ Bug.loseState = function() {
     Bug.stopGame();
     Bug.createFrame();
     var score = Bug.displayScore();
-    // Bug.pauseGame();
+    Bug.level = 1;
+    Bug.pauseGame();
     if (Bugger.scoreIsTopTen(score)) {
       Bugger.loadNewPage('newtop.html');
     } else {
@@ -447,7 +466,7 @@ Bug.pauseGame = function(){
     Bug.frameRateID = window.setInterval(Bug.renderGame, 33);
     Bug.pause = false;
   }
-}
+};
 
 /**
  * LOGIC  - Runs on page load
@@ -458,12 +477,12 @@ Bug.startGame = function(initFlag) {
     Bug.gameOver = false;
 
     Bug.allObstacles = []; //Holds all obstacles on screen
-    Bug.buildObstacleEndZone(); //Populate end 
-    
-
-    for (var i = 1; i < 11; i++) { 
-      Bug.allObstacles.push([]);
-      Bug.buildObstacleRow(i);
+    Bug.buildObstacleEndZone();
+    if (DBG_DRAW_OBSTACLES) {
+      for (var i = 1; i < 11; i++) {
+        Bug.allObstacles.push([]);
+        Bug.buildObstacleRow(i);
+      }
     }
   }
 
@@ -482,10 +501,10 @@ Bug.startGame = function(initFlag) {
   Bug.player = new Bug(); //Instantiate Bug Object
   Bug.renderGame(); //Create frame / Test for collisions
 
-
-  Bug.pressListener = window.addEventListener('keypress', Bug.keyDirect); 
+  Bug.pressListener = window.addEventListener('keypress', Bug.keyDirect);
   Bug.clockRate = window.setInterval(Bug.clockTime, 1000); //Clock Interval Timer
-  Bug.frameRateID = window.setInterval(Bug.renderGame, 33); //Render Frame Rate 
+  Bug.frameRateID = window.setInterval(Bug.renderGame, 33); //Render Frame Rate
+
 };
 
 Bug.keyDirect = function(event) {
@@ -495,7 +514,7 @@ Bug.keyDirect = function(event) {
   } else {
     Bug.player.moveBug(event);
   }
-}
+};
 
 window.onload = function() {
   Bug.startGame(INIT_NEW_GAME);
