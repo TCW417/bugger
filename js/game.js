@@ -14,25 +14,23 @@ ctx.fillStyle = '#00ff00'; //Text Color
 Bug.level = 1; //Holds current level in range [1-9]
 var MAX_LEVEL = 9;
 Bug.minCar = 2; //Min number of cars/row  
-Bug.filenames = ['assets/green-52.png', //binary-80px
-'assets/green-109px.png', //binary-120px
-'assets/green-167.png', //binary-160px
-'assets/green-195.png', //binary-200px
-'assets/green-225.png', //binary-240px
-'assets/green-280.png']; //binary-280px
+Bug.filenames = ['assets/green-52.png',
+'assets/green-109.png',
+'assets/green-167.png',
+'assets/green-195.png',
+'assets/green-225.png',
+'assets/green-280.png'];
 Bug.maxSeparation = [8, 7, 6, 5, 5, 4, 4, 4, 4, 4];
 Bug.minSeparation = [6, 5, 5, 4, 3, 3, 3, 2, 2, 2];
 Bug.maxObsLength = [4, 4, 4, 5, 5, 5, 6, 6, 6, 6];
 Bug.minObsLength = [4, 4, 3, 3, 3, 2, 2, 2, 2, 2];
 Bug.maxVelocity = [5, 5, 6, 6, 6, 7, 7, 8, 9, 10];
 Bug.minVelocity = [2, 2, 2, 3, 3, 4, 4, 4, 5, 6];
-
 var ENDZONE_SLOTS = 3; //slots in level endzone
 var ENDZONE_XPOS = [120, 320, 480];
 Bug.inEndZone = 0; // counter of bugs in endzone
 Bug.ezBugs = []; // array of bugs to display in endzone.
 Bug.ezUpCounter = 0; // must be 1 to count as an endzone win
-
 Bug.bugLives = []; // queue of bugs lives available to play.
 
 
@@ -70,7 +68,7 @@ Bug.prototype.moveBug = function(event) {
   }
   if(event.keyCode === 119 && this.yPos === BOX_SIZE && ENDZONE_XPOS.includes(this.xPos) && !Bug.ezUpCounter) {
     Bug.ezUpCounter++;
-  } else if(event.keyCode === 119 && Bug.ezUpCounter) {
+  } else if (event.keyCode === 119 && Bug.ezUpCounter) {
     console.log('made it home!');
     this.image.src = 'assets/bug.png';
     Bug.fillEndzoneSlot(this.xPos);
@@ -88,12 +86,12 @@ Bug.prototype.moveBug = function(event) {
     this.image.src = 'assets/bug_right.png';
     Bug.ezUpCounter = (ENDZONE_XPOS.includes(this.xPos) ? 1 : 0 );
   }
+
   if(event.keyCode === 115 && this.yPos < (canvas.height - BOX_SIZE)) {
     this.yPos += BOX_SIZE;
     this.image.src = 'assets/bug_down.png';
     Bug.ezUpCounter = 0;
   }
-
   if(this.yPos === 0) {
     Bug.winState();
   }
@@ -220,9 +218,9 @@ Bug.buildObsTrain = function(movesRight) {
  */
 Bug.buildObstacleEndZone = function() {
   Bug.allObstacles.push([]);
-  Bug.allObstacles[0].push(new Obstacle('assets/pcb-118.png',36,118,0,true)); //binary-118px
-  Bug.allObstacles[0].push(new Obstacle('assets/pcb-156.png',36,156,0,true)); //binary-156px
-  Bug.allObstacles[0].push(new Obstacle('assets/pcb-116.png',36,116,0,true)); //binary-116px
+  Bug.allObstacles[0].push(new Obstacle('assets/pcb-118.png',36,118,0,true));
+  Bug.allObstacles[0].push(new Obstacle('assets/pcb-156.png',36,156,0,true));
+  Bug.allObstacles[0].push(new Obstacle('assets/pcb-116.png',36,116,0,true));
   Bug.allObstacles[0].push(new Obstacle('assets/pcb-118.png',36,118,0,true));
   Bug.allObstacles[0][0].xPos = 0; // + 118+44 = 160
   Bug.allObstacles[0][1].xPos = 162; //162; //+160+40 = 360
@@ -293,15 +291,12 @@ Bug.createFrame = function () {
       Bug.allObstacles[i][j].drawObstacle();
     }
   }
-
   for (i = 0; i < Bug.ezBugs.length; i++) {
     Bug.ezBugs[i].drawBug();
   }
-
   for (i = 0; i < Bug.bugLives.length; i++) {
     Bug.bugLives[i].drawBug();
   }
-
   ctx.fillText('Time:' + Bug.clock + ' Level: ' + Bug.level, 15, 475); //Draw countdown clock
   Bug.player.drawBug(); //Draw Bug
 };
@@ -322,6 +317,16 @@ Bug.displayScore = function() {
   ctx.fillText('Score: ' + totalScore, canvas.width/2, canvas.height/2);
   localStorage.setItem('score',JSON.stringify(totalScore));
   return totalScore;
+};
+
+
+Bug.fillEndzoneSlot = function(xPos){
+  var ezSlot = ENDZONE_XPOS.indexOf(xPos);
+  console.log('filling endzone slot',ezSlot);
+  Bug.ezBugs[Bug.inEndZone] = new Bug();
+  Bug.ezBugs[Bug.inEndZone].velocity = 0;
+  Bug.ezBugs[Bug.inEndZone].xPos = xPos;
+  Bug.ezBugs[Bug.inEndZone].yPos = 0;
 };
 
 
@@ -360,21 +365,12 @@ Bug.winState = function() {
   if (Bug.level > MAX_LEVEL) {
     console.log('winState: MAX LEVEL ACHIEVED!!!');
     Bug.level = 9; //for now...
-
   }
   // delay a bit then start next level
   window.setTimeout(function(){},2000);
   Bug.startGame(INIT_NEW_LEVEL);
 };
 
-Bug.fillEndzoneSlot = function(xPos){
-  var ezSlot = ENDZONE_XPOS.indexOf(xPos);
-  console.log('filling endzone slot',ezSlot);
-  Bug.ezBugs[Bug.inEndZone] = new Bug();
-  Bug.ezBugs[Bug.inEndZone].velocity = 0;
-  Bug.ezBugs[Bug.inEndZone].xPos = xPos;
-  Bug.ezBugs[Bug.inEndZone].yPos = 0;
-};
 
 /**
  * This is where losing-specific things happen
@@ -410,7 +406,7 @@ Bug.stopGame = function() {
 
 /**
  * Update Countdown Clock
- * @return {number} Bug.clock - Number of seconds left in gameplay
+ * @return {number} clock - Number of seconds left in gameplay
  */
 Bug.clockTime = function() {
   Bug.clock--;
@@ -421,10 +417,10 @@ Bug.clockTime = function() {
   return Bug.clock;
 };
 
+
 /**
  * LOGIC  - Runs on page load
  */
-
 Bug.startGame = function(initFlag) {
   if (initFlag === INIT_NEW_LEVEL || initFlag === INIT_NEW_GAME){
     Bug.clock = TIME_LIMIT;
@@ -434,7 +430,6 @@ Bug.startGame = function(initFlag) {
     };
     Bug.allObstacles = []; //Holds all obstacles on screen
     Bug.buildObstacleEndZone();
-
     for (var i = 1; i < 11; i++) {
       Bug.allObstacles.push([]);
       Bug.buildObstacleRow(i);
@@ -448,7 +443,6 @@ Bug.startGame = function(initFlag) {
       Bug.bugLives[i].xPos = 580 - (i * 40);
     }
   }
-
   Bug.player = new Bug(); //Instantiate Bug Object
   Bug.renderGame();
 

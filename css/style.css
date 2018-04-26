@@ -199,6 +199,7 @@ table tr td{
   position: absolute;
   left: 310px;
   top: 110px;
+  border-radius: 10px;
 }
 
 footer {
