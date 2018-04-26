@@ -329,7 +329,7 @@ Bug.displayScore = function() {
   var rowScore = 10 * rowsCompleted; // 10 points per row completed
 
   // bonus for each bug parked in the end zone
-  var finalRowBonus = ((Bug.level-1)*3 + Bug.inEndZone) * 500;
+  var finalRowBonus = ((Bug.level-1)*3 + Bug.inEndZone) * 100;
   console.log('final rows completed',finalRowBonus/100);
   //Bonus for time left on clock
   var timeBonus = 0;
