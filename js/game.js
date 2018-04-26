@@ -2,7 +2,11 @@
 
 //Variables
 var BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
-var TIME_LIMIT = 10; //Amount of time allowed to play in seconds
+var TIME_LIMIT = 90; //Amount of time allowed to play game
+var BUG_LIVES_QUEUE = 2; //Number of lives player gets before game over
+var INIT_CONTINUE_LEVEL = 0; //Died on level with lives remaining
+var INIT_NEW_GAME = 1; //Flag indicating start of new game
+var INIT_NEW_LEVEL = 2; //Flag indicating start of new level
 var canvas = document.getElementById('myCanvas'); //Canvas HTML location
 var ctx = canvas.getContext('2d'); //2 dimensional canvas rendering
 ctx.font = '30px Arial'; //Text size and Font
@@ -30,6 +34,7 @@ Bug.ezBugs = []; // array of bugs to display in endzone.
 Bug.ezUpCounter = 0; // must be 1 to count as an endzone win
 
 Bug.bugLives = []; // queue of bugs lives available to play.
+
 
 /**
  * BUG Constructor - Create Bug Object
@@ -270,7 +275,7 @@ Bug.detectCollision = function() {
  */
 Bug.renderGame = function(){
   Bug.createFrame(); //Render Objects
-  if(Bug.detectCollision()) { //Detect Collisions
+  if(Bug.detectCollision()) { //Detect Collision
     Bug.loseState();
     Bug.createFrame();
   }
@@ -315,6 +320,7 @@ Bug.displayScore = function() {
   var timeBonus = Bug.clock*10;
   var totalScore = rowScore + finalRowBonus + timeBonus;
   ctx.fillText('Score: ' + totalScore, canvas.width/2, canvas.height/2);
+  localStorage.setItem('score',JSON.stringify(totalScore));
   return totalScore;
 };
 
@@ -338,14 +344,13 @@ Bug.clockTime = function() {
  */
 Bug.winState = function() {
   console.log('You got into Production!');
-  
   Bug.stopGame();
   Bug.createFrame(); //renders one more frame after game cease
   Bug.inEndZone++; // increment bugs in endzone
   if (Bug.inEndZone === ENDZONE_SLOTS) {
     console.log('winState: end of level');
     Bug.level++;
-    //display score now. Endzone is full.
+    //display score now. Endzone is full. End of level
     Bug.displayScore();
     Bug.inEndZone = 0;
     Bug.ezBugs = [];
@@ -355,9 +360,11 @@ Bug.winState = function() {
   if (Bug.level > MAX_LEVEL) {
     console.log('winState: MAX LEVEL ACHIEVED!!!');
     Bug.level = 9; //for now...
+
   }
   // delay a bit then start next level
-  window.setTimeout(Bug.startGame, 5000);
+  window.setTimeout(function(){},2000);
+  Bug.startGame(INIT_NEW_LEVEL);
 };
 
 Bug.fillEndzoneSlot = function(xPos){
@@ -373,11 +380,18 @@ Bug.fillEndzoneSlot = function(xPos){
  * This is where losing-specific things happen
  */
 Bug.loseState = function() {
-  Bug.gameOver = true;
-  console.log('Lose State Triggered');
-  Bug.stopGame();
-  Bug.createFrame();
-  Bug.displayScore();
+  if (Bug.bugLives.pop()) { // then we still have lives to play
+    Bug.stopGame();
+    Bug.createFrame();
+    console.log('loseState: Lives remaining');
+    Bug.startGame(INIT_CONTINUE_LEVEL);
+  } else { // out of lives. Game Over.
+    Bug.gameOver = true;
+    console.log('Lose State Triggered');
+    Bug.stopGame();
+    Bug.createFrame();
+    Bug.displayScore();
+  }
 };
 
 
@@ -390,7 +404,7 @@ Bug.stopGame = function() {
   window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
   window.clearInterval(Bug.clockRate); //Stop Timer
   window.removeEventListener('keypress', Bug.keypressListener);
-  Bug.renderGame(); //renders one more frame after game cease
+  // Bug.renderGame(); //renders one more frame after game cease
 };
 
 
@@ -411,25 +425,28 @@ Bug.clockTime = function() {
  * LOGIC  - Runs on page load
  */
 
-Bug.startGame = function() {
-  Bug.clock = TIME_LIMIT;
-  Bug.keypressListener = function(event) {
-    Bug.player.moveBug(event);
-  };
-  Bug.allObstacles = []; //Holds all obstacles on screen
-  Bug.buildObstacleEndZone();
+Bug.startGame = function(initFlag) {
+  if (initFlag === INIT_NEW_LEVEL || initFlag === INIT_NEW_GAME){
+    Bug.clock = TIME_LIMIT;
+    Bug.gameOver = false;
+    Bug.keypressListener = function(event) {
+      Bug.player.moveBug(event);
+    };
+    Bug.allObstacles = []; //Holds all obstacles on screen
+    Bug.buildObstacleEndZone();
 
-  // for (var i = 1; i < 11; i++) {
-  for (var i = 1; i < 3; i++) {
-    Bug.allObstacles.push([]);
-    Bug.buildObstacleRow(i);
+    for (var i = 1; i < 11; i++) {
+      Bug.allObstacles.push([]);
+      Bug.buildObstacleRow(i);
+    }
   }
-
-  for (i = 0; i < BUG_LIVES_QUEUE; i++) {
-    Bug.bugLives[i] = new Bug();
-    Bug.bugLives[i].velocity = 0;
-    Bug.bugLives[i].yPos = 440;
-    Bug.bugLives[i].xPos = 540 + (i * 40);
+  if (initFlag === INIT_NEW_GAME){
+    for (i = 0; i < BUG_LIVES_QUEUE; i++) {
+      Bug.bugLives[i] = new Bug();
+      Bug.bugLives[i].velocity = 0;
+      Bug.bugLives[i].yPos = 440;
+      Bug.bugLives[i].xPos = 580 - (i * 40);
+    }
   }
 
   Bug.player = new Bug(); //Instantiate Bug Object
@@ -441,5 +458,5 @@ Bug.startGame = function() {
 };
 
 window.onload = function() {
-  Bug.startGame();
+  Bug.startGame(INIT_NEW_GAME);
 };
