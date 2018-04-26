@@ -2,7 +2,7 @@
 
 //Variables
 var BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
-var TIME_LIMIT = 30; //Amount of time allowed to play game
+var TIME_LIMIT = 90; //Amount of time allowed to play game
 var canvas = document.getElementById('myCanvas'); //Canvas HTML location
 var ctx = canvas.getContext('2d'); //2 dimensional canvas rendering
 ctx.font = '30px Arial';
@@ -43,6 +43,7 @@ Bug.prototype.clearBug = function() {
 };
 
 Bug.prototype.moveBug = function(event) {
+  console.log('move bug');
   if(Bug.gameOver) return;
   if(event.keyCode === 119 && this.yPos > 0) {
     this.yPos -= BOX_SIZE;
@@ -233,8 +234,12 @@ Bug.winState = function() {
     Bug.displayScore();
     // delay a bit then start next level
   }
+  if (Bug.level > MAX_LEVEL) {
+    console.log('winState: MAX LEVEL ACHIEVED!!!');
+    Bug.level = 9; //for now...
+  }
   console.log('starting next level...');
-  setTimeout(Bug.startgame, 5000);
+  window.setTimeout(Bug.startGame, 5000);
 };
 
 Bug.minCar = 2;
@@ -300,6 +305,7 @@ Bug.buildObsTrain = function(movesRight) {
 Bug.stopGame = function() {
   window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
   window.clearInterval(Bug.clockRate); //Stop Timer
+  window.removeEventListener('keypress', Bug.keypressListener);
   Bug.renderGame(); //renders one more frame after game cease
 };
 
@@ -317,12 +323,11 @@ Bug.clockTime = function() {
   return Bug.clock;
 };
 
-Bug.startGame = window.onload; // alias for the onload function
-
 /**
  * LOCIC  - Runs on page load
  */
-window.onload = function() {
+
+Bug.startGame = function() {
   Bug.clock = TIME_LIMIT;
   Bug.keypressListener = function(event) {
     Bug.player.moveBug(event);
@@ -338,4 +343,8 @@ window.onload = function() {
   window.addEventListener('keypress', Bug.keypressListener); //Event Listener for KEY PRESSES
   Bug.clockRate = window.setInterval(Bug.clockTime, 1000); //Clock Interval Timer
   Bug.frameRateID = window.setInterval(Bug.renderGame, 33); //Render Frame Rate
+};
+
+window.onload = function() {
+  Bug.startGame();
 };
