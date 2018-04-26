@@ -2,7 +2,7 @@
 
 //Variables
 var BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
-var TIME_LIMIT = 3; //Amount of time allowed to play 
+var TIME_LIMIT = 10; //Amount of time allowed to play 
 var canvas = document.getElementById('myCanvas'); //Canvas HTML location
 var ctx = canvas.getContext('2d'); //2 dimensional canvas rendering
 ctx.font = '30px Arial'; //Text size and Font
@@ -220,7 +220,6 @@ Bug.buildObstacleEndZone = function() {
  * @param {*} rowNum - Number assigned to Object rows
  */
 Bug.buildObstacleRow = function(rowNum) {
-  console.log('row',rowNum);
   var trains = Bug.buildObsTrain(!!(rowNum%2));
   for (var t = 0; t < trains.length; t++) {
     Bug.allObstacles[rowNum][t] = (new Obstacle(
@@ -315,6 +314,7 @@ Bug.clockTime = function() {
  */
 Bug.winState = function() {
   console.log('You got into Production!');
+  
   Bug.stopGame();
   Bug.inEndZone++; // increment bugs in endzone
   if (Bug.inEndZone === ENDZONE_SLOTS) {
