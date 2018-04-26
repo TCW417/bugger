@@ -2,7 +2,7 @@
 
 //Variables
 var BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
-var TIME_LIMIT = 90; //Amount of time allowed to play game
+var TIME_LIMIT = 45; //Amount of time allowed to play game
 var BUG_LIVES_QUEUE = 2; //Number of lives player gets before game over
 var INIT_CONTINUE_LEVEL = 0; //Died on level with lives remaining
 var INIT_NEW_GAME = 1; //Flag indicating start of new game
@@ -312,17 +312,21 @@ Bug.createFrame = function () {
  * @return {number} totalScore - Player Score
  */
 Bug.displayScore = function() {
-  var rowScore = ( 100*(12 - Bug.player.yPos/BOX_SIZE) ) - 100;
+  var totalScore = parseInt(JSON.parse(localStorage.getItem('score')) || 0);
 
-  var finalRowBonus = 0;
-  if (Bug.player.yPos === BOX_SIZE) { //Bug made it to home row
-    finalRowBonus = 500;
-  }
+  var rowsCompleted = (Bug.level-1)*30 + Bug.inEndZone*10 + 
+    (10 - Bug.player.yPos/BOX_SIZE);
+  var rowScore = 100 * rowsCompleted; // 100 points per row completed
+
+  // bonus for each bug parked in the end zone
+  var finalRowBonus = ((Bug.level-1)*3 + Bug.inEndZone) * 500;
+
+  //Bonus for time left on clock
   var timeBonus = 0;
-  if (Bug.inEndZone === ENDZONE_SLOTS) {
+  if (Bug.inEndZone > 0) {
     timeBonus = Bug.clock*10;
   }
-  var totalScore = rowScore + finalRowBonus + timeBonus;
+  totalScore += rowScore + finalRowBonus + timeBonus;
   localStorage.setItem('score',JSON.stringify(totalScore));
 
   if (!Bug.gameOver) {
@@ -357,6 +361,7 @@ Bug.clockTime = function() {
  */
 Bug.winState = function() {
   console.log('You got into Production!');
+  Bug.startGameInitLevel = INIT_CONTINUE_LEVEL;
   Bug.stopGame();
   Bug.createFrame(); //renders one more frame after game cease
   Bug.inEndZone++; // increment bugs in endzone
@@ -369,15 +374,16 @@ Bug.winState = function() {
     Bug.ezBugs = [];
     // Bug.createFrame(); //renders one more frame after game cease
     console.log('starting next level...');
+    Bug.startGameInitLevel = INIT_NEW_LEVEL;
   }
   if (Bug.level > MAX_LEVEL) {
     console.log('winState: MAX LEVEL ACHIEVED!!!');
     Bug.level = 9; //for now...
-
+    Bug.startGameInitLevel = INIT_NEW_LEVEL;
   }
   // delay a bit then start next level
   window.setTimeout(function(){},2000);
-  Bug.startGame(INIT_NEW_LEVEL);
+  Bug.startGame(Bug.startGameInitLevel);
 };
 
 Bug.fillEndzoneSlot = function(xPos){
@@ -466,6 +472,7 @@ Bug.startGame = function(initFlag) {
       Bug.bugLives[i].yPos = 440;
       Bug.bugLives[i].xPos = 580 - (i * 40);
     }
+    localStorage.removeItem('score');
   }
 
   Bug.player = new Bug(); //Instantiate Bug Object
