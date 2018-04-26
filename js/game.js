@@ -173,6 +173,7 @@ Bug.buildMetaTrain = function() {
   return [car, space];
 };
 
+
 /**
  * Creates a train of Obstacles
  * @param {boolean} movesRight - TRUE = Moves to right / FALSE = Moves to left
@@ -277,6 +278,7 @@ Bug.createFrame = function () {
   Bug.player.drawBug(); //Draw Bug
 };
 
+
 /**
  * Calculate and Display Score to Canvas
  * @return {number} totalScore - Player Score
@@ -292,6 +294,8 @@ Bug.displayScore = function() {
   ctx.fillText('Score: ' + totalScore, canvas.width/2, canvas.height/2);
   return totalScore;
 };
+
+
 /**
  * Update Countdown Clock
  * @return {number} Bug.clock - Number of seconds left in gameplay
@@ -305,7 +309,8 @@ Bug.clockTime = function() {
   return Bug.clock;
 };
 
-  /**
+
+/**
  * This is where winning-specific things happen
  */
 Bug.winState = function() {
@@ -322,7 +327,6 @@ Bug.winState = function() {
   }
   console.log('starting next level...');
   setTimeout(Bug.startgame, 5000);
-
 };
 
 /**
@@ -336,6 +340,7 @@ Bug.loseState = function() {
   Bug.displayScore();
 };
 
+
 /**
  * END OF GAME BEHAVIORS
  */
@@ -346,10 +351,11 @@ Bug.stopGame = function() {
   window.clearInterval(Bug.clockRate); //Stop Timer
 };
 
+
 Bug.startGame = window.onload; // alias for the onload function
 
 /**
- * LOCIC  - Runs on page load
+ * LOGIC  - Runs on page load
  */
 window.onload = function() {
   Bug.clock = TIME_LIMIT;
