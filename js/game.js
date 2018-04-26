@@ -10,10 +10,12 @@ ctx.fillStyle = '#00ff00';
 Bug.gameOver = false; //Game State
 
 var ENDZONE_SLOTS = 3; //slots in level endzone
+var ENDZONE_XPOS = [120, 320, 480];
 Bug.inEndZone = 0; // counter of bugs in endzone
 var MAX_LEVEL = 9;
 Bug.level = 1; // current game level
-
+Bug.ezBugs = []; // array of bugs to display in endzone.
+Bug.ezUpCounter = 0; // must be 1 to count as an endzone win
 /**
  * BUG Constructor - Create Bug Object
  */
@@ -45,21 +47,32 @@ Bug.prototype.clearBug = function() {
 Bug.prototype.moveBug = function(event) {
   console.log('move bug');
   if(Bug.gameOver) return;
-  if(event.keyCode === 119 && this.yPos > 0) {
+  if(event.keyCode === 119 && this.yPos >= BOX_SIZE) {
     this.yPos -= BOX_SIZE;
     this.image.src = 'assets/bug.png';
+    if (Bug.ezUpCounter) {
+      console.log('made it home!');
+      Bug.fillEndzoneSlot(this.xPos);
+      this.yPos = 0;
+    }
+  }
+  if(event.keyCode === 119 && this.yPos === BOX_SIZE && ENDZONE_XPOS.includes(this.xPos)) {
+    Bug.ezUpCounter++;
   }
   if(event.keyCode === 97 && this.xPos > 0) {
     this.xPos -= BOX_SIZE;
     this.image.src = 'assets/bug_left.png';
+    Bug.ezUpCounter = 0;
   }
   if(event.keyCode === 100 && this.xPos < (canvas.width - this.width)){
     this.xPos += BOX_SIZE;
     this.image.src = 'assets/bug_right.png';
+    Bug.ezUpCounter = 0;
   }
-  if(event.keyCode === 115 && this.yPos < (canvas.height - 45)) {
+  if(event.keyCode === 115 && this.yPos < (canvas.height - BOX_SIZE)) {
     this.yPos += BOX_SIZE;
     this.image.src = 'assets/bug_down.png';
+    Bug.ezUpCounter = 0;
   }
 
   if(this.yPos === 0) {
@@ -202,6 +215,9 @@ Bug.renderGame = function(){
     }
   }
 
+  for (i = 0; i < Bug.ezBugs.length; i++) {
+    Bug.ezBugs[i].drawBug();
+  }
 
   ctx.fillText('Time:' + Bug.clock, 15, 475); //Draw countdown clock
 
@@ -231,6 +247,7 @@ Bug.winState = function() {
     console.log('winState: end of level');
     Bug.level++;
     Bug.inEndZone = 0;
+    Bug.ezBugs = []; 
     Bug.displayScore();
     // delay a bit then start next level
   }
@@ -240,6 +257,15 @@ Bug.winState = function() {
   }
   console.log('starting next level...');
   window.setTimeout(Bug.startGame, 5000);
+};
+
+Bug.fillEndzoneSlot = function(xPos){
+  var ezSlot = ENDZONE_XPOS.indexOf(xPos);
+  console.log('filling endzone slot',ezSlot);
+  Bug.ezBugs[Bug.inEndZone] = new Bug();
+  Bug.ezBugs[Bug.inEndZone].velocity = 0;
+  Bug.ezBugs[Bug.inEndZone].xPos = xPos;
+  Bug.ezBugs[Bug.inEndZone].yPos = 0;
 };
 
 Bug.minCar = 2;
@@ -334,10 +360,10 @@ Bug.startGame = function() {
   };
   Bug.allObstacles = []; //; Bug.allObstacles[0]=[]; //Holds all obstacles on screen
   Bug.buildObstacleEndZone();
-  for (var i = 1; i < 11; i++) {
-    Bug.allObstacles.push([]);
-    Bug.buildObstacleRow(i);
-  }
+  // for (var i = 1; i < 11; i++) {
+  //   Bug.allObstacles.push([]);
+  //   Bug.buildObstacleRow(i);
+  // }
   Bug.player = new Bug();
   Bug.renderGame();
   window.addEventListener('keypress', Bug.keypressListener); //Event Listener for KEY PRESSES
