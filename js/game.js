@@ -3,7 +3,7 @@
 //Variables
 var BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
 var TIME_LIMIT = 15; //Amount of time allowed to play game
-var BUG_LIVES_QUEUE = 2; //Number of lives player gets before game over
+var LIVES_REMAINING = 2; //Number of lives player gets before game over
 var INIT_CONTINUE_LEVEL = 0; //Died on level with lives remaining
 var INIT_NEW_GAME = 1; //Flag indicating start of new game
 var INIT_NEW_LEVEL = 2; //Flag indicating start of new level
@@ -371,29 +371,28 @@ Bug.ezSlotIsFilled = function(xPos) {
  * This is where winning-specific things happen
  */
 Bug.winState = function() {
-  console.log('You got into Production!');
-  Bug.startGameInitLevel = INIT_CONTINUE_LEVEL;
-  Bug.clock = TIME_LIMIT;
-  Bug.stopGame();
-  Bug.createFrame(); //renders one more frame after game cease
-  Bug.inEndZone++; // increment bugs in endzone
-  if (Bug.inEndZone === ENDZONE_SLOTS) { //End of level
-    console.log('winState: end of level');
-    Bug.level++;
-    //display score now. Endzone is full. End of level
+
+  Bug.clock = TIME_LIMIT; // Reset Timer
+  Bug.inEndZone++; //Increment bugs in endzone
+  Bug.startGameInitLevel = INIT_CONTINUE_LEVEL; //Causes ezBugs and obstacles to stay
+  Bug.stopGame(); //Clears Intervals
+  Bug.createFrame(); //Renders one more frame after game cease puts bug in endzone
+
+  if (Bug.inEndZone === ENDZONE_SLOTS) { //Entered when level is complete
+    Bug.level++; //Increases Level
+    Bug.pauseGame();
     Bug.displayScore();
-    // Bug.pauseGame();
-    Bug.inEndZone = 0;
-    Bug.ezBugs = [];
-    // Bug.createFrame(); //renders one more frame after game cease
-    console.log('starting next level...');
-    Bug.startGameInitLevel = INIT_NEW_LEVEL;
+    Bug.inEndZone = 0; //Resets bugs in endzone
+    Bug.ezBugs = []; //Resets array bugs in endzone
+    Bug.startGameInitLevel = INIT_NEW_LEVEL; //Clear bugs from en
+
   }
-  if (Bug.level > MAX_LEVEL) {
+  if (Bug.level > MAX_LEVEL) { //Entered after you beat level 9
     console.log('winState: MAX LEVEL ACHIEVED!!!');
     Bug.level = 9; //for now...
     Bug.startGameInitLevel = INIT_NEW_LEVEL;
   }
+
   // delay a bit then start next level
   //window.setTimeout(function(){},2000);
   Bug.startGame(Bug.startGameInitLevel);
@@ -404,11 +403,11 @@ Bug.winState = function() {
  * This is where losing-specific things happen
  */
 Bug.loseState = function() {
-  Bug.displayScore(); // calc score thus far (won't display)
   if (Bug.bugLives.pop()) { // then we still have lives to play
-    Bug.stopGame();
+    Bug.stopGame(); //Clear intervals
+    
     Bug.createFrame();
-    Bug.clock = TIME_LIMIT;
+    Bug.clock = TIME_LIMIT; //Reset Clock
     console.log('loseState: Lives remaining');
     Bug.startGame(INIT_CONTINUE_LEVEL);
   } else { // out of lives. Game Over.
@@ -432,14 +431,14 @@ Bug.loseState = function() {
  * END OF GAME BEHAVIORS
  */
 Bug.stopGame = function() {
-  console.log('Stop Game Triggered');
   Bug.frameRateID = window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
   Bug.clockRate = window.clearInterval(Bug.clockRate); //Stop Timer
+  // Bug.pressListener = window.removeEventListener('keypress', Bug.keyDirect);
 };
 
 
 /**
- * Update Countdown Clock
+ * Update Clock
  * @return {number} clock - Number of seconds left in gameplay
  */
 Bug.clockTime = function() {
@@ -453,14 +452,14 @@ Bug.clockTime = function() {
 
 
 /**
- * Pauses the game
+ * Pauses the game Bug.pause == false
  */
 Bug.pauseGame = function(){
   if(!Bug.pause) {
     Bug.clockRate = window.clearInterval(Bug.clockRate);
     Bug.frameRateID = window.clearInterval(Bug.frameRateID);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    Bug.displayScore();
+    ctx.clearRect(140, 370, 350, 60);
+    ctx.fillText("Press SPACE to continue", 150, 410);
     Bug.pause = true;
   } else {
     Bug.clockRate = window.setInterval(Bug.clockTime, 1000);
@@ -473,12 +472,10 @@ Bug.pauseGame = function(){
  * LOGIC  - Runs on page load
  */
 Bug.startGame = function(initFlag) {
-  if (initFlag === INIT_NEW_LEVEL || initFlag === INIT_NEW_GAME){
+  if (initFlag === INIT_NEW_LEVEL || initFlag === INIT_NEW_GAME) { //Happens on new game OR new level
     Bug.clock = TIME_LIMIT;
     Bug.gameOver = false;
-    // Bug.keypressListener = function(event) {
-    //   Bug.player.moveBug(event);
-    // };
+
     Bug.allObstacles = []; //Holds all obstacles on screen
     Bug.buildObstacleEndZone();
     if (DBG_DRAW_OBSTACLES) {
@@ -488,21 +485,26 @@ Bug.startGame = function(initFlag) {
       }
     }
   }
-  if (initFlag === INIT_NEW_GAME){
-    for (i = 0; i < BUG_LIVES_QUEUE; i++) {
-      Bug.bugLives[i] = new Bug();
-      Bug.bugLives[i].velocity = 0;
-      Bug.bugLives[i].yPos = 440;
+
+
+  if (initFlag === INIT_NEW_GAME){ //Only happens on new game
+    for (i = 0; i < LIVES_REMAINING; i++) { //Generating Lives remaining icon
+      Bug.bugLives[i] = new Bug(); //Instantiate new bug
+      Bug.bugLives[i].velocity = 0; //Don't move.
+      Bug.bugLives[i].yPos = 440; 
       Bug.bugLives[i].xPos = 580 - (i * 40);
     }
-    localStorage.removeItem('score');
+    localStorage.removeItem('score'); //Clear local storage
   }
+
+
   Bug.player = new Bug(); //Instantiate Bug Object
-  Bug.renderGame();
+  Bug.renderGame(); //Create frame / Test for collisions
 
   Bug.pressListener = window.addEventListener('keypress', Bug.keyDirect);
   Bug.clockRate = window.setInterval(Bug.clockTime, 1000); //Clock Interval Timer
   Bug.frameRateID = window.setInterval(Bug.renderGame, 33); //Render Frame Rate
+
 };
 
 Bug.keyDirect = function(event) {
