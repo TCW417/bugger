@@ -313,14 +313,16 @@ Bug.createFrame = function () {
  */
 Bug.displayScore = function() {
   var totalScore = parseInt(JSON.parse(localStorage.getItem('score')) || 0);
-
+  console.log('opening score', totalScore);
   var rowsCompleted = (Bug.level-1)*30 + Bug.inEndZone*10 + 
-    (10 - Bug.player.yPos/BOX_SIZE);
-  var rowScore = 100 * rowsCompleted; // 100 points per row completed
+    (11 - Bug.player.yPos/BOX_SIZE);
+  console.log('Bug.level-1',Bug.level-1,'Bug.inEndZone',Bug.inEndZone);
+  console.log('Bug.player.yPos',Bug.player.yPos,'rowsCompleted',rowsCompleted);
+  var rowScore = 10 * rowsCompleted; // 10 points per row completed
 
   // bonus for each bug parked in the end zone
   var finalRowBonus = ((Bug.level-1)*3 + Bug.inEndZone) * 500;
-
+  console.log('final rows completed',finalRowBonus/100);
   //Bonus for time left on clock
   var timeBonus = 0;
   if (Bug.inEndZone > 0) {
@@ -362,12 +364,12 @@ Bug.winState = function() {
   Bug.stopGame();
   Bug.createFrame(); //renders one more frame after game cease
   Bug.inEndZone++; // increment bugs in endzone
-  if (Bug.inEndZone === ENDZONE_SLOTS) {
+  if (Bug.inEndZone === ENDZONE_SLOTS) { //End of level
     console.log('winState: end of level');
     Bug.level++;
     //display score now. Endzone is full. End of level
     Bug.displayScore();
-    Bug.pauseGame();
+    // Bug.pauseGame();
     Bug.inEndZone = 0;
     Bug.ezBugs = [];
     // Bug.createFrame(); //renders one more frame after game cease
@@ -389,6 +391,7 @@ Bug.winState = function() {
  * This is where losing-specific things happen
  */
 Bug.loseState = function() {
+  Bug.displayScore(); // calc score thus far (won't display)
   if (Bug.bugLives.pop()) { // then we still have lives to play
     Bug.stopGame();
     Bug.createFrame();
