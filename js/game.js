@@ -313,12 +313,15 @@ Bug.createFrame = function () {
  */
 Bug.displayScore = function() {
   var rowScore = ( 100*(12 - Bug.player.yPos/BOX_SIZE) ) - 100;
-  var finalRowBonus = 0;
 
-  if (Bug.player.yPos/BOX_SIZE === 0) {
+  var finalRowBonus = 0;
+  if (Bug.player.yPos === BOX_SIZE) { //Bug made it to home row
     finalRowBonus = 500;
   }
-  var timeBonus = Bug.clock*10;
+  var timeBonus = 0;
+  if (Bug.inEndZone === ENDZONE_SLOTS) {
+    timeBonus = Bug.clock*10;
+  }
   var totalScore = rowScore + finalRowBonus + timeBonus;
   localStorage.setItem('score',JSON.stringify(totalScore));
 
@@ -405,7 +408,7 @@ Bug.loseState = function() {
     if (Bugger.scoreIsTopTen(score)) {
       Bugger.loadNewPage('newtop.html');
     } else {
-      Bugger.loadNewPage('about.html');
+      Bugger.loadNewPage('gameover.html');
     }
   }
 };
