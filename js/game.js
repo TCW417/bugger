@@ -2,7 +2,7 @@
 
 //Variables
 var BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
-var TIME_LIMIT = 30; //Amount of time allowed to play game
+var TIME_LIMIT = 3; //Amount of time allowed to play 
 var canvas = document.getElementById('myCanvas'); //Canvas HTML location
 var ctx = canvas.getContext('2d'); //2 dimensional canvas rendering
 ctx.font = '30px Arial'; //Text size and Font
@@ -73,7 +73,7 @@ Bug.prototype.moveBug = function(event) {
     this.yPos += BOX_SIZE;
     this.image.src = 'assets/bug_down.png';
   }
-  
+
   if(this.yPos === 0) {
     Bug.winState();
   }
@@ -258,6 +258,7 @@ Bug.renderGame = function(){
   Bug.createFrame(); //Render Objects
   if(Bug.detectCollision()) { //Detect Collisions
     Bug.loseState();
+    Bug.createFrame();
   }
 };
 
@@ -320,6 +321,7 @@ Bug.winState = function() {
     console.log('winState: end of level');
     Bug.level++;
     Bug.inEndZone = 0;
+    Bug.createFrame(); //renders one more frame after game cease
     Bug.displayScore();
     // delay a bit then start next level
   }
@@ -331,8 +333,11 @@ Bug.winState = function() {
  * This is where losing-specific things happen
  */
 Bug.loseState = function() {
+  Bug.gameOver = true;
   console.log('Lose State Triggered');
   Bug.stopGame();
+  Bug.createFrame();
+  Bug.displayScore();
 };
 
 
@@ -344,7 +349,6 @@ Bug.stopGame = function() {
   window.document.removeEventListener('keypress', Bug.keypressListener); //Remove Key listener
   window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
   window.clearInterval(Bug.clockRate); //Stop Timer
-  Bug.displayScore(); //Render Score
 };
 
 
