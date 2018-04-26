@@ -2,7 +2,7 @@
 
 //Variables
 var BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
-var TIME_LIMIT = 30; //Amount of time allowed to play game
+var TIME_LIMIT = 20; //Amount of time allowed to play game
 var canvas = document.getElementById('myCanvas'); //Canvas HTML location
 var ctx = canvas.getContext('2d'); //2 dimensional canvas rendering
 ctx.font = '30px Arial';
@@ -221,14 +221,18 @@ This is where scoring happens
 */
 
 Bug.displayScore = function() {
-  var rowScore = 100*(11 - Bug.player.yPos/BOX_SIZE);
+  var rowScore = ( 100*(12 - Bug.player.yPos/BOX_SIZE) ) - 100;
   var finalRowBonus = 0;
+  ctx.font = '40px courier';
   if (Bug.player.yPos/BOX_SIZE === 0) {
     finalRowBonus = 500;
   }
   var timeBonus = Bug.clock*10;
   var totalScore = rowScore + finalRowBonus + timeBonus;
-  ctx.fillText('Score: ' + totalScore, canvas.width/2, canvas.height/2);
+  ctx.clearRect(1, canvas.height/2 - 80, 640, 200);
+  ctx.fillText('You got ' + totalScore + ' points!', 75, canvas.height/2);
+  ctx.fillText('Ready for the next level?', 20, canvas.height/2 + 70);
+  ctx.font = '30px Arial';
   return totalScore;
 };
 
