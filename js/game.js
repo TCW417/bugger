@@ -13,13 +13,13 @@ ctx.font = '30px Arial'; //Text size and Font
 ctx.fillStyle = '#00ff00'; //Text Color
 Bug.level = 1; //Holds current level in range [1-9]
 var MAX_LEVEL = 9;
-Bug.minCar = 2; //Min number of cars/row  
+Bug.minCar = 2; //Min number of cars/row
 Bug.filenames = ['assets/green-52.png', //binary-80px
-'assets/green-109px.png', //binary-120px
-'assets/green-167.png', //binary-160px
-'assets/green-195.png', //binary-200px
-'assets/green-225.png', //binary-240px
-'assets/green-280.png']; //binary-280px
+  'assets/green-109px.png', //binary-120px
+  'assets/green-167.png', //binary-160px
+  'assets/green-195.png', //binary-200px
+  'assets/green-225.png', //binary-240px
+  'assets/green-280.png']; //binary-280px
 Bug.maxSeparation = [8, 7, 6, 5, 5, 4, 4, 4, 4, 4];
 Bug.minSeparation = [6, 5, 5, 4, 3, 3, 3, 2, 2, 2];
 Bug.maxObsLength = [4, 4, 4, 5, 5, 5, 6, 6, 6, 6];
@@ -312,14 +312,18 @@ Bug.createFrame = function () {
  * @return {number} totalScore - Player Score
  */
 Bug.displayScore = function() {
-  var rowScore = 100*(11 - Bug.player.yPos/BOX_SIZE);
+  var rowScore = ( 100*(12 - Bug.player.yPos/BOX_SIZE) ) - 100;
   var finalRowBonus = 0;
+  ctx.font = '40px courier';
   if (Bug.player.yPos/BOX_SIZE === 0) {
     finalRowBonus = 500;
   }
   var timeBonus = Bug.clock*10;
   var totalScore = rowScore + finalRowBonus + timeBonus;
-  ctx.fillText('Score: ' + totalScore, canvas.width/2, canvas.height/2);
+  ctx.clearRect(1, canvas.height/2 - 80, 640, 200);
+  ctx.fillText('You got ' + totalScore + ' points!', 75, canvas.height/2);
+  ctx.fillText('Ready for the next level?', 20, canvas.height/2 + 70);
+  ctx.font = '30px Arial';
   localStorage.setItem('score',JSON.stringify(totalScore));
   return totalScore;
 };
