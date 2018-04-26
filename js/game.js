@@ -2,7 +2,7 @@
 
 //Variables
 var BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
-var TIME_LIMIT = 45; //Amount of time allowed to play game
+var TIME_LIMIT = 15; //Amount of time allowed to play game
 var BUG_LIVES_QUEUE = 2; //Number of lives player gets before game over
 var INIT_CONTINUE_LEVEL = 0; //Died on level with lives remaining
 var INIT_NEW_GAME = 1; //Flag indicating start of new game
@@ -33,7 +33,6 @@ Bug.inEndZone = 0; // counter of bugs in endzone
 Bug.ezBugs = []; // array of bugs to display in endzone.
 Bug.ezUpCounter = 0; // must be 1 to count as an endzone win
 Bug.bugLives = []; // queue of bugs lives available to play.
-
 Bug.pause = false;
 
 
@@ -97,7 +96,8 @@ Bug.prototype.moveBug = function(event) {
     this.image.src = 'assets/bug_down.png';
     Bug.ezUpCounter = 0;
   }
-  if(this.yPos === 0) {
+
+  if(this.yPos === 0) { 
     Bug.winState();
   }
 };
@@ -359,6 +359,7 @@ Bug.fillEndzoneSlot = function(xPos){
 Bug.winState = function() {
   console.log('You got into Production!');
   Bug.startGameInitLevel = INIT_CONTINUE_LEVEL;
+  Bug.clock = TIME_LIMIT;
   Bug.stopGame();
   Bug.createFrame(); //renders one more frame after game cease
   Bug.inEndZone++; // increment bugs in endzone
@@ -392,6 +393,7 @@ Bug.loseState = function() {
   if (Bug.bugLives.pop()) { // then we still have lives to play
     Bug.stopGame();
     Bug.createFrame();
+    Bug.clock = TIME_LIMIT;
     console.log('loseState: Lives remaining');
     Bug.startGame(INIT_CONTINUE_LEVEL);
   } else { // out of lives. Game Over.
@@ -417,7 +419,6 @@ Bug.stopGame = function() {
   console.log('Stop Game Triggered');
   Bug.frameRateID = window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
   Bug.clockRate = window.clearInterval(Bug.clockRate); //Stop Timer
-
 };
 
 
@@ -435,6 +436,9 @@ Bug.clockTime = function() {
 };
 
 
+/**
+ * Pauses the game
+ */
 Bug.pauseGame = function(){
   if(!Bug.pause) {
     Bug.clockRate = window.clearInterval(Bug.clockRate);
