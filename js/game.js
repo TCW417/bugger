@@ -441,8 +441,7 @@ Bug.startGame = function(initFlag) {
     Bug.allObstacles = []; //Holds all obstacles on screen
     Bug.buildObstacleEndZone();
 
-    // for (var i = 1; i < 11; i++) {
-    for (var i = 1; i < 3; i++) {
+    for (var i = 1; i < 11; i++) {
       Bug.allObstacles.push([]);
       Bug.buildObstacleRow(i);
     }
