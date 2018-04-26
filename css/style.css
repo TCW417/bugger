@@ -32,7 +32,6 @@ h4 {
   clear: both;
   height: 330px;
   padding-bottom: 30px;
-
 }
 .bio img {
   display: block;
@@ -53,7 +52,9 @@ h4 {
   padding: 28px;
   background-size: auto;
   width: 450px;
+  height: 245px;
   float: right;
+  overflow: scroll;
 }
 body {
   width: 100%;
