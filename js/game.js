@@ -2,7 +2,7 @@
 
 //Variables
 var BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
-var TIME_LIMIT = 30; //Amount of time allowed to play game
+var TIME_LIMIT = 3; //Amount of time allowed to play 
 var canvas = document.getElementById('myCanvas'); //Canvas HTML location
 var ctx = canvas.getContext('2d'); //2 dimensional canvas rendering
 ctx.font = '30px Arial';
@@ -58,7 +58,6 @@ Bug.prototype.moveBug = function(event) {
     this.yPos += BOX_SIZE;
     this.image.src = 'assets/bug_down.png';
   }
-
   if(this.yPos === 0) {
     Bug.winState();
   }
@@ -191,6 +190,7 @@ Bug.renderGame = function(){
   Bug.createFrame();
   if(Bug.detectCollision()) {
     Bug.loseState();
+    Bug.createFrame();
   }
 };
 
@@ -214,6 +214,8 @@ Bug.loseState = function() {
   Bug.gameOver = true;
   console.log('Lose State Triggered');
   Bug.stopGame();
+  Bug.createFrame();
+  Bug.displayScore();
 };
 
 /*
@@ -237,7 +239,9 @@ Bug.displayScore = function() {
  */
 Bug.winState = function() {
   console.log('Win State Triggered');
+  Bug.stopGame();
   Bug.createFrame(); //renders one more frame after game cease
+  Bug.displayScore();
 };
 
 
@@ -249,9 +253,7 @@ Bug.stopGame = function() {
   console.log('Stop Game Triggered');
   window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
   window.clearInterval(Bug.clockRate); //Stop Timer
-
-  window.document.removeEventListener('keypress', Bug.keypressListener);
-  Bug.displayScore();
+  window.removeEventListener('keypress', Bug.keypressListener);
 
 };
 
