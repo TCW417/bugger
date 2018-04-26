@@ -2,20 +2,20 @@
 
 //Variables
 var BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
-var TIME_LIMIT = 90; //Amount of time allowed to play game
-var BUG_LIVES_QUEUE = 2;
+var TIME_LIMIT = 10; //Amount of time allowed to play in seconds
 var canvas = document.getElementById('myCanvas'); //Canvas HTML location
 var ctx = canvas.getContext('2d'); //2 dimensional canvas rendering
 ctx.font = '30px Arial'; //Text size and Font
 ctx.fillStyle = '#00ff00'; //Text Color
 Bug.level = 1; //Holds current level in range [1-9]
-Bug.minCar = 2; //Min number of cars/row
-Bug.filenames = ['assets/binary-80px.png',
-  'assets/binary-120px.png',
-  'assets/binary-160px.png',
-  'assets/binary-200px.png',
-  'assets/binary-240px.png',
-  'assets/binary-280px.png'];
+var MAX_LEVEL = 9;
+Bug.minCar = 2; //Min number of cars/row  
+Bug.filenames = ['assets/green-52.png', //binary-80px
+'assets/green-109px.png', //binary-120px
+'assets/green-167.png', //binary-160px
+'assets/green-195.png', //binary-200px
+'assets/green-225.png', //binary-240px
+'assets/green-280.png']; //binary-280px
 Bug.maxSeparation = [8, 7, 6, 5, 5, 4, 4, 4, 4, 4];
 Bug.minSeparation = [6, 5, 5, 4, 3, 3, 3, 2, 2, 2];
 Bug.maxObsLength = [4, 4, 4, 5, 5, 5, 6, 6, 6, 6];
@@ -26,9 +26,6 @@ Bug.minVelocity = [2, 2, 2, 3, 3, 4, 4, 4, 5, 6];
 var ENDZONE_SLOTS = 3; //slots in level endzone
 var ENDZONE_XPOS = [120, 320, 480];
 Bug.inEndZone = 0; // counter of bugs in endzone
-
-var MAX_LEVEL = 9;
-Bug.level = 1; // current game level
 Bug.ezBugs = []; // array of bugs to display in endzone.
 Bug.ezUpCounter = 0; // must be 1 to count as an endzone win
 
@@ -56,10 +53,6 @@ Bug.prototype.rightSide = function() {
 
 Bug.prototype.drawBug = function() {
   ctx.drawImage(this.image, this.xPos, this.yPos);
-};
-
-Bug.prototype.clearBug = function() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
 
 Bug.prototype.moveBug = function(event) {
@@ -222,10 +215,10 @@ Bug.buildObsTrain = function(movesRight) {
  */
 Bug.buildObstacleEndZone = function() {
   Bug.allObstacles.push([]);
-  Bug.allObstacles[0].push(new Obstacle('assets/binary-118px.png',36,118,0,true));
-  Bug.allObstacles[0].push(new Obstacle('assets/binary-156px.png',36,156,0,true));
-  Bug.allObstacles[0].push(new Obstacle('assets/binary-116px.png',36,116,0,true));
-  Bug.allObstacles[0].push(new Obstacle('assets/binary-118px.png',36,118,0,true));
+  Bug.allObstacles[0].push(new Obstacle('assets/pcb-118.png',36,118,0,true)); //binary-118px
+  Bug.allObstacles[0].push(new Obstacle('assets/pcb-156.png',36,156,0,true)); //binary-156px
+  Bug.allObstacles[0].push(new Obstacle('assets/pcb-116.png',36,116,0,true)); //binary-116px
+  Bug.allObstacles[0].push(new Obstacle('assets/pcb-118.png',36,118,0,true));
   Bug.allObstacles[0][0].xPos = 0; // + 118+44 = 160
   Bug.allObstacles[0][1].xPos = 162; //162; //+160+40 = 360
   Bug.allObstacles[0][2].xPos = 362; //+120+40 = 520

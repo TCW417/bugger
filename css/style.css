@@ -195,6 +195,12 @@ table tr td{
   border-radius: 10px;
 }
 
+#glare {
+  position: absolute;
+  left: 310px;
+  top: 110px;
+}
+
 footer {
   display: block;
   width: 100%;
