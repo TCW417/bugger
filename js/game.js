@@ -312,21 +312,19 @@ Bug.createFrame = function () {
  * @return {number} totalScore - Player Score
  */
 Bug.displayScore = function() {
-  var rowScore = ( 100*(12 - Bug.player.yPos/BOX_SIZE) ) - 100;
+  var rowScore = 100*(11 - Bug.player.yPos/BOX_SIZE);
   var finalRowBonus = 0;
-  ctx.font = '40px courier';
   if (Bug.player.yPos/BOX_SIZE === 0) {
     finalRowBonus = 500;
   }
   var timeBonus = Bug.clock*10;
   var totalScore = rowScore + finalRowBonus + timeBonus;
-  ctx.clearRect(1, canvas.height/2 - 80, 640, 200);
-  ctx.fillText('You got ' + totalScore + ' points!', 75, canvas.height/2);
-  ctx.fillText('Ready for the next level?', 20, canvas.height/2 + 70);
-  ctx.font = '30px Arial';
+  ctx.fillText('Score: ' + totalScore, canvas.width/2, canvas.height/2);
   localStorage.setItem('score',JSON.stringify(totalScore));
   return totalScore;
 };
+
+
 
 
 /**
@@ -395,6 +393,7 @@ Bug.loseState = function() {
     Bug.stopGame();
     Bug.createFrame();
     Bug.displayScore();
+    ctx.fillText('GAME OVER', 10, 50);
   }
 };
 
