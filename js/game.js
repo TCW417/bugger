@@ -314,17 +314,23 @@ Bug.createFrame = function () {
 Bug.displayScore = function() {
   var rowScore = ( 100*(12 - Bug.player.yPos/BOX_SIZE) ) - 100;
   var finalRowBonus = 0;
-  ctx.font = '40px courier';
+
   if (Bug.player.yPos/BOX_SIZE === 0) {
     finalRowBonus = 500;
   }
   var timeBonus = Bug.clock*10;
   var totalScore = rowScore + finalRowBonus + timeBonus;
-  ctx.clearRect(1, canvas.height/2 - 80, 640, 200);
-  ctx.fillText('You got ' + totalScore + ' points!', 75, canvas.height/2);
-  ctx.fillText('Ready for the next level?', 20, canvas.height/2 + 70);
-  ctx.font = '30px Arial';
   localStorage.setItem('score',JSON.stringify(totalScore));
+
+  if (!Bug.gameOver) {
+  // If Bug.gameOver is false then we're between levels
+    ctx.font = '40px courier';
+    ctx.clearRect(1, canvas.height/2 - 80, 640, 200);
+    ctx.fillText('LEVEL ' + Bug.level + ' COMPLETE',150, canvas.height/2 - 50);
+    ctx.fillText('You got ' + totalScore + ' points!', 75, canvas.height/2);
+    ctx.fillText('Ready for the next level? Just wait...', 20, canvas.height/2 + 70);
+    ctx.font = '30px Arial';
+  }
   return totalScore;
 };
 
@@ -394,7 +400,13 @@ Bug.loseState = function() {
     console.log('Lose State Triggered');
     Bug.stopGame();
     Bug.createFrame();
-    Bug.displayScore();
+    var score = Bug.displayScore();
+    // Bug.pauseGame();
+    if (Bugger.scoreIsTopTen(score)) {
+      Bugger.loadNewPage('newtop.html');
+    } else {
+      Bugger.loadNewPage('about.html');
+    }
   }
 };
 
