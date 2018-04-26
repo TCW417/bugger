@@ -60,7 +60,7 @@ Bugger.loadNewPage = function(pageName){
   window.location.href = url;
 };
 
-fx = {
+Bugger.fx = {
   jump: 'sounds/jump01.wav',
   coinDrop: 'sounds/coin-dropping.wav',
   levelVictory: 'sounds/end-level-victory.wav',

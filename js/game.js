@@ -7,7 +7,8 @@ var canvas = document.getElementById('myCanvas'); //Canvas HTML location
 var ctx = canvas.getContext('2d'); //2 dimensional canvas rendering
 ctx.font = '30px Arial'; //Text size and Font
 ctx.fillStyle = '#00ff00'; //Text Color
-Bug.level = 1; //Holds current level in range [1-9] 
+Bug.level = 1; //Holds current level in range [1-9]
+var MAX_LEVEL = 9;
 Bug.minCar = 2; //Min number of cars/row
 Bug.filenames = ['assets/binary-80px.png',
 'assets/binary-120px.png',
@@ -21,6 +22,10 @@ Bug.maxObsLength = [4, 4, 4, 5, 5, 5, 6, 6, 6, 6];
 Bug.minObsLength = [4, 4, 3, 3, 3, 2, 2, 2, 2, 2];
 Bug.maxVelocity = [5, 5, 6, 6, 6, 7, 7, 8, 9, 10];
 Bug.minVelocity = [2, 2, 2, 3, 3, 4, 4, 4, 5, 6];
+
+var ENDZONE_SLOTS = 3; //slots in level endzone
+Bug.inEndZone = 0; // counter of bugs in endzone
+
 
 
 /**
@@ -303,6 +308,24 @@ Bug.clockTime = function() {
   return Bug.clock;
 };
 
+  /**
+ * This is where winning-specific things happen
+ */
+Bug.winState = function() {
+  console.log('You got into Production!');
+  Bug.stopGame();
+  Bug.inEndZone++; // increment bugs in endzone
+  if (Bug.inEndZone === ENDZONE_SLOTS) {
+    console.log('winState: end of level');
+    Bug.level++;
+    Bug.inEndZone = 0;
+    Bug.displayScore();
+    // delay a bit then start next level
+  }
+  console.log('starting next level...');
+  setTimeout(Bug.startgame, 5000);
+
+};
 
 /**
  * This is where losing-specific things happen
@@ -311,17 +334,6 @@ Bug.loseState = function() {
   console.log('Lose State Triggered');
   Bug.stopGame();
 };
-
-
-/**
- * This is where winning-specific things happen
- */
-Bug.winState = function() {
-  console.log('Win State Triggered');
-  Bug.stopGame();
-  Bug.createFrame(); //renders one more frame after game cease
-};
-
 
 /**
  * END OF GAME BEHAVIORS
@@ -334,6 +346,7 @@ Bug.stopGame = function() {
   Bug.displayScore(); //Render Score
 };
 
+Bug.startGame = window.onload; // alias for the onload function
 
 /**
  * LOCIC  - Runs on page load
