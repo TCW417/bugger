@@ -59,3 +59,13 @@ Bugger.loadNewPage = function(pageName){
   console.log(url);
   window.location.href = url;
 };
+
+fx = {
+  jump: 'sounds/jump01.wav',
+  coinDrop: 'sounds/coin-dropping.wav',
+  levelVictory: 'sounds/end-level-victory.wav',
+  bugMakesIt: 'sounds/accomplishment.wav',
+  bugDeath: 'sounds/bugdeath.wav',
+  loseSound: 'sounds/loseSound.wav',
+  loseVoice: 'sounds/loseVoice.mp3'
+};
