@@ -239,10 +239,9 @@ Bug.buildObstacleEndZone = function() {
 
 /**
  * Build all rows between ENDZONE and HOME ROW
- * @param {*} rowNum - Number assigned to Object rows
+ * @param {number} rowNum - Number assigned to Object rows
  */
 Bug.buildObstacleRow = function(rowNum) {
-  console.log('row',rowNum);
   var trains = Bug.buildObsTrain(!!(rowNum%2));
   for (var t = 0; t < trains.length; t++) {
     Bug.allObstacles[rowNum][t] = (new Obstacle(
@@ -346,6 +345,7 @@ Bug.clockTime = function() {
  */
 Bug.winState = function() {
   console.log('You got into Production!');
+  
   Bug.stopGame();
   Bug.createFrame(); //renders one more frame after game cease
   Bug.inEndZone++; // increment bugs in endzone
