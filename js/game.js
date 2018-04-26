@@ -2,7 +2,7 @@
 
 //Variables
 var BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
-var TIME_LIMIT = 3; //Amount of time allowed to play 
+var TIME_LIMIT = 30; //Amount of time allowed to play
 var canvas = document.getElementById('myCanvas'); //Canvas HTML location
 var ctx = canvas.getContext('2d'); //2 dimensional canvas rendering
 ctx.font = '30px Arial'; //Text size and Font
@@ -11,11 +11,11 @@ Bug.level = 1; //Holds current level in range [1-9]
 var MAX_LEVEL = 9;
 Bug.minCar = 2; //Min number of cars/row
 Bug.filenames = ['assets/binary-80px.png',
-'assets/binary-120px.png',
-'assets/binary-160px.png',
-'assets/binary-200px.png',
-'assets/binary-240px.png',
-'assets/binary-280px.png'];
+  'assets/binary-120px.png',
+  'assets/binary-160px.png',
+  'assets/binary-200px.png',
+  'assets/binary-240px.png',
+  'assets/binary-280px.png'];
 Bug.maxSeparation = [8, 7, 6, 5, 5, 4, 4, 4, 4, 4];
 Bug.minSeparation = [6, 5, 5, 4, 3, 3, 3, 2, 2, 2];
 Bug.maxObsLength = [4, 4, 4, 5, 5, 5, 6, 6, 6, 6];
@@ -100,7 +100,7 @@ function Obstacle(src, h, w, startRow, movesRight) {
     this.xPos = canvas.width;
   }
   this.startXpos = this.xPos;
-  
+
   this.yPos = (startRow * BOX_SIZE);
   if (Bug.level > 3) {
     var v = this.randomVelocity();
@@ -143,7 +143,7 @@ function Traincar(width, xPos, velocity) {
   this.xPos = xPos;
   this.velocity = velocity;
   this.filepath = Bug.filenames[this.width/BOX_SIZE - Bug.minCar];
-};
+}
 
 /**
  * Generates a number within a range
@@ -346,7 +346,7 @@ Bug.loseState = function() {
  */
 Bug.stopGame = function() {
   console.log('Stop Game Triggered');
-  window.document.removeEventListener('keypress', Bug.keypressListener); //Remove Key listener
+  window.removeEventListener('keypress', Bug.keypressListener); //Remove Key listener
   window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
   window.clearInterval(Bug.clockRate); //Stop Timer
 };
