@@ -105,7 +105,7 @@ Bug.prototype.moveBug = function(event) {
     Bug.ezUpCounter = 0;
   }
 
-  if(this.yPos === 0) { 
+  if(this.yPos === 0) {
     Bug.winState();
   }
 };
@@ -288,7 +288,6 @@ Bug.renderGame = function(){
   Bug.createFrame(); //Render Objects
   if(Bug.detectCollision()) { //Detect Collision
     Bug.loseState();
-    Bug.createFrame();
   }
 };
 
@@ -322,7 +321,7 @@ Bug.createFrame = function () {
 Bug.displayScore = function() {
   var totalScore = parseInt(JSON.parse(localStorage.getItem('score')) || 0);
   console.log('opening score', totalScore);
-  var rowsCompleted = (Bug.level-1)*30 + Bug.inEndZone*10 + 
+  var rowsCompleted = (Bug.level-1)*30 + Bug.inEndZone*10 +
     (11 - Bug.player.yPos/BOX_SIZE);
   console.log('Bug.level-1',Bug.level-1,'Bug.inEndZone',Bug.inEndZone);
   console.log('Bug.player.yPos',Bug.player.yPos,'rowsCompleted',rowsCompleted);
@@ -336,7 +335,7 @@ Bug.displayScore = function() {
   if (Bug.inEndZone > 0) {
     timeBonus = Bug.clock*10;
   }
-  
+
   totalScore += rowScore + finalRowBonus + timeBonus;
   localStorage.setItem('score',JSON.stringify(totalScore));
 
@@ -363,7 +362,6 @@ Bug.fillEndzoneSlot = function(xPos){
 };
 
 Bug.ezSlotIsFilled = function(xPos) {
-  var slotFilled = false;
   for (var i of Bug.ezBugs) {
     if (i.xPos === xPos) return true;
   }
@@ -469,7 +467,7 @@ Bug.pauseGame = function(){
     Bug.frameRateID = window.setInterval(Bug.renderGame, 33);
     Bug.pause = false;
   }
-}
+};
 
 /**
  * LOGIC  - Runs on page load
@@ -502,14 +500,9 @@ Bug.startGame = function(initFlag) {
   Bug.player = new Bug(); //Instantiate Bug Object
   Bug.renderGame();
 
-
-
-
   Bug.pressListener = window.addEventListener('keypress', Bug.keyDirect);
   Bug.clockRate = window.setInterval(Bug.clockTime, 1000); //Clock Interval Timer
   Bug.frameRateID = window.setInterval(Bug.renderGame, 33); //Render Frame Rate
-  
-  
 };
 
 Bug.keyDirect = function(event) {
@@ -519,7 +512,7 @@ Bug.keyDirect = function(event) {
   } else {
     Bug.player.moveBug(event);
   }
-}
+};
 
 window.onload = function() {
   Bug.startGame(INIT_NEW_GAME);
