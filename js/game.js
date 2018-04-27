@@ -19,15 +19,16 @@ ctx.fillStyle = '#00ff00'; //Text Color
 Bug.level = STARTING_LEVEL; //Holds current level in range [1-9]
 
 Bug.minCar = 2; //Min number of cars/row
-Bug.filenames = ['assets/green-52.png', //binary-80px
+Bug.filenames = ['','','assets/green-52.png', //binary-80px
   'assets/green-109.png', //binary-120px
   'assets/green-167.png', //binary-160px
   'assets/green-195.png', //binary-200px
   'assets/green-225.png', //binary-240px
   'assets/green-280.png']; //binary-280px
+Bug.ObsWidth = [40, 40, 52, 109, 167, 195, 225, 280];
 Bug.maxSeparation = [11, 11, 10, 10, 10, 8, 8, 8, 7, 7];
 Bug.minSeparation = [11, 11, 8, 6, 5, 4, 4, 4, 3, 3];
-Bug.maxObsLength = [5, 5, 6, 6, 6, 6, 6, 6, 6, 6];
+Bug.maxObsLength = [5, 5, 6, 6, 6, 6, 7, 7, 7, 7];
 Bug.minObsLength = [5, 4, 4, 3, 3, 3, 3, 2, 2, 2];
 Bug.maxVelocity = [3, 3, 4, 4, 5, 6, 7, 8, 9, 9];
 Bug.minVelocity = [1, 2, 2, 2, 3, 3, 3, 4, 5, 6];
@@ -175,12 +176,13 @@ Obstacle.prototype.moveObstacle = function() {
  * @param {number} width - width in pixels
  * @param {number} xPos - starting x position
  * @param {number} velocity - rate that this object will move
+ * @param {string} file - path name of object image file
  */
-function Traincar(width, xPos, velocity) {
+function Traincar(width, xPos, velocity, file) {
   this.width = width;
   this.xPos = xPos;
   this.velocity = velocity;
-  this.filepath = Bug.filenames[this.width/BOX_SIZE - MIN_OBS_LENGTH];
+  this.filepath = file;
 }
 
 /**
@@ -234,7 +236,7 @@ Bug.buildObsTrain = function(movesRight) {
   var train = [];
   var v = Bug.randInRange(Bug.minVelocity[l], Bug.maxVelocity[l], false) * (movesRight ? 1 : -1);
   for (var k = 0; k < car.length; k++) {
-    train[k] = new Traincar(car[k]*BOX_SIZE, xPos, v);
+    train[k] = new Traincar(Bug.ObsWidth[car[k]], xPos, v, Bug.filenames[car[k]]);
     xPos += ((train[k].width + space[k]*BOX_SIZE) * (movesRight ? 1 : -1));
   }
   return train;
