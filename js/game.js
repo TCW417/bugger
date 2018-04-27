@@ -18,6 +18,7 @@ ctx.font = '30px Arial'; //Text size and Font
 ctx.fillStyle = '#00ff00'; //Text Color
 Bug.level = STARTING_LEVEL; //Holds current level in range [1-9]
 
+
 Bug.minCar = 2; //Min number of cars/row
 Bug.filenames = ['','','assets/green-52.png', //binary-80px
   'assets/green-109.png', //binary-120px
