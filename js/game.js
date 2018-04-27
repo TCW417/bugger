@@ -25,7 +25,7 @@ Bug.ezSound = new Sound('sounds/jump01.wav');
 Bug.timeOutSound = new Sound('sounds/loseSound.wav');
 
 
-Bug.minCar = 2; //Min number of cars/row
+Bug.minCar = MIN_OBS_LENGTH; //Min number of cars/row
 Bug.filenames = ['','','assets/green-52.png', //binary-80px
   'assets/green-109.png', //binary-120px
   'assets/green-167.png', //binary-160px
@@ -97,7 +97,6 @@ Bug.prototype.moveBug = function(event) {
     this.image.src = 'assets/bug.png';
     Bug.fillEndzoneSlot(this.xPos);
     this.yPos = 0;
-    
   }
 
   if(event.keyCode === 37 && this.xPos > 0) { //97
@@ -581,7 +580,7 @@ Bug.startGame = function() {
     for (i = 0; i < LIVES_REMAINING; i++) { //Generating Lives remaining icon
       Bug.bugLives[i] = new Bug(); //Instantiate new bug
       Bug.bugLives[i].velocity = 0; //Don't move.
-      Bug.bugLives[i].yPos = 440; 
+      Bug.bugLives[i].yPos = 440;
       Bug.bugLives[i].xPos = 580 - (i * 40);
     }
     localStorage.removeItem('score'); //Clear local storage
