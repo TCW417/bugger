@@ -5,7 +5,7 @@ function NewTop () {}
 NewTop.addNewTopScore = function(player, score) {
   NewTop.topScores = JSON.parse(localStorage.getItem('topScores')) || Bugger.restoreTopTenTableData();
   NewTop.topScores.push({player, score});
-  NewTop.topScores =  Bugger.sortObjArrayOnKey(NewTop.topScores,'score',false);
+  NewTop.topScores = Bugger.sortObjArrayOnKey(NewTop.topScores,'score',false);
   NewTop.topScores.pop();
   localStorage.topScores = JSON.stringify(NewTop.topScores);
 };
