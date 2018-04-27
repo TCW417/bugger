@@ -2,9 +2,10 @@
 
 //Variables
 const BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
-const TIME_LIMIT = 15; //Amount of time allowed to play game
+const TIME_LIMIT = 20; //Amount of time allowed to play game
 const LIVES_REMAINING = 2; //Number of lives player gets before game over
 const INIT_CONTINUE_LEVEL = 0; //Died on level with lives remaining
+const INIT_CONTINUE_AFTER_TIMEOUT = 3; //Died on timout with lives remaining
 const INIT_NEW_GAME = 1; //Flag indicating start of new game
 const INIT_NEW_LEVEL = 2; //Flag indicating start of new level
 const DBG_DRAW_OBSTACLES = true; //set to false to disable obstacles
@@ -427,9 +428,13 @@ Bug.loseState = function() {
   if (Bug.bugLives.pop()) { // then we still have lives to play
     Bug.stopGame(); //Clear intervals
     Bug.createFrame();
+    if (Bug.clock === 0) { // died on timeout
+      Bug.startGameInitLevel = INIT_CONTINUE_AFTER_TIMEOUT;
+    } else {
+      Bug.startGameInitLevel = INIT_CONTINUE_LEVEL;
+    }
     Bug.clock = TIME_LIMIT; //Reset Clock
     console.log('loseState: ',Bug.bugLives.length,'Lives remaining');
-    Bug.startGameInitLevel = INIT_CONTINUE_LEVEL;
     window.setTimeout(Bug.startGame, 1000);
   } else { // out of lives. Game Over.
     Bug.gameOver = true;
@@ -447,9 +452,22 @@ Bug.loseState = function() {
   }
 };
 
+Bug.timeoutSplashScreenMsg = function() {
+  var startY = 200;
+  //var lineHeight = 55;
+  Bug.createFrame();
+  ctx.font = '40px courier';
+  //ctx.clearRect(15, startY-5, 55, 590);
+  ctx.clearRect(15,155,625,75);
+  ctx.fillText('Your Bug ran out of time!',30, startY);
+  ctx.font = '30px Arial';
+  Bug.pauseGame();
+};
+
 Bug.startupSplashScreenMsg = function() {
   var startY = 120;
   var lineHeight = 55;
+  Bug.createFrame();
   ctx.font = '40px courier';
   ctx.clearRect(85, 125, 100, 100);
   ctx.fillText('WELCOME TO BUGGER!',110, startY);
@@ -457,6 +475,7 @@ Bug.startupSplashScreenMsg = function() {
   ctx.fillText('Spacebar pauses game', 80, startY + lineHeight*2);
   ctx.fillText('Good Luck!', 200, startY + 25 +lineHeight*3);
   ctx.font = '30px Arial';
+  Bug.pauseGame();
 };
 
 /**
@@ -491,8 +510,8 @@ Bug.pauseGame = function(){
   if(!Bug.pause) {
     Bug.clockRate = window.clearInterval(Bug.clockRate);
     Bug.frameRateID = window.clearInterval(Bug.frameRateID);
-    ctx.clearRect(140, 370, 350, 60);
-    ctx.fillText("Press SPACE to continue", 150, 410);
+    ctx.clearRect(135, 375, 370, 50);
+    ctx.fillText('Press SPACE to continue', 150, 410);
     Bug.pause = true;
   } else {
     Bug.clockRate = window.setInterval(Bug.clockTime, 1000);
@@ -539,9 +558,13 @@ Bug.startGame = function() {
   Bug.clockRate = window.setInterval(Bug.clockTime, 1000); //Clock Interval Timer
   Bug.frameRateID = window.setInterval(Bug.renderGame, 33); //Render Frame Rate
 
-  if (initFlag === INIT_NEW_GAME) {
-    Bug.pauseGame();
+  switch (initFlag) {
+  case INIT_NEW_GAME:
     Bug.startupSplashScreenMsg();
+    break;
+  case INIT_CONTINUE_AFTER_TIMEOUT:
+    Bug.timeoutSplashScreenMsg();
+    break;
   }
 };
 
