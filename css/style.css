@@ -14,11 +14,11 @@ h2 {
   line-height: 1.5em;
   border: 6px inset #ff00c1;
   color: #00fff9;
-  margin: auto;
+  margin: 50px auto;
   width: 900px;
-  margin-top: 60px;
+  /* margin-top: 60px; */
   font-size: 40px;
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
 }
 
 h4 {
@@ -35,30 +35,38 @@ h4 {
   width: 100%;
 }
 .bio img {
-  display: inline-block;
-  vertical-align: top;
-
-  /* float: left; */
-  height: 300px;
-  width: 300px;
+  /* display: inline-block; */
+  /* vertical-align: top; */
+  /* width: auto; */
+  /* height: auto; */
+  margin-right: 20px;
+  margin-top: 30px;
+  margin-bottom: 0;
+  min-width: 50px;
+  min-height: 50px;
+  max-height: 300px;
+  max-width: 300px;
   border-radius: 6px;
-  margin: 25px 20px;
+  /* margin: 25px 20px; */
   /* z-index: 10; */
 }
 
 .bio p {
-  display: inline-block;
-  vertical-align: top;
+  /* display: inline-block; */
+  flex-wrap: wrap;
+
   color: rgb(30, 30, 180);
-  margin-top: 25px;
+  margin-top: 30px;
+  margin-bottom: 0;
+  margin-right: 0;
   background-color: #ff00c1;opacity: .9;
   border-radius: 6px;
+  font-size: 1em;
   text-align: justify;
   padding: 15px;
   background-size: auto;
   width: 60%;
-  height: 270px;
-  /* float: right; */
+  height: 280px;
   overflow-y: auto;
 }
 body {
@@ -143,7 +151,10 @@ main div {
 }
 
 div.bio {
-  display: inline-block;
+  display: inline-flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  /* margin: auto 0; */
 }
 
 ul#landing-menu {
@@ -273,16 +284,21 @@ footer p {
 }
 
 #howToPlay p {
+  width: 600px;
+
   color: blue;
-  margin: 2em;
+  margin: auto;
+  margin-top: 30px;
   background-color: #ff00c1;opacity: .9;
   border-radius: 6px;
   text-align: center;
   padding: 20px;
   background-size: auto;
 }
+
 #howToPlay p:last-child {
-  width: 300px;
+  width: 600px;
   margin: auto;
+  margin-top: 30px;
   margin-bottom: 2em;
 }
