@@ -2,9 +2,10 @@
 
 //Variables
 const BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
-const TIME_LIMIT = 15; //Amount of time allowed to play game
+const TIME_LIMIT = 20; //Amount of time allowed to play game
 const LIVES_REMAINING = 2; //Number of lives player gets before game over
 const INIT_CONTINUE_LEVEL = 0; //Died on level with lives remaining
+const INIT_CONTINUE_AFTER_TIMEOUT = 3; //Died on timout with lives remaining
 const INIT_NEW_GAME = 1; //Flag indicating start of new game
 const INIT_NEW_LEVEL = 2; //Flag indicating start of new level
 const DBG_DRAW_OBSTACLES = true; //set to false to disable obstacles
@@ -16,17 +17,21 @@ var ctx = canvas.getContext('2d'); //2 dimensional canvas rendering
 ctx.font = '30px Arial'; //Text size and Font
 ctx.fillStyle = '#00ff00'; //Text Color
 Bug.level = STARTING_LEVEL; //Holds current level in range [1-9]
+Bug.startGameSound = new Sound('sounds/accomplishment.wav');
+Bug.bugSound = new Sound('sounds/movesound.wav');
+Bug.endLevelSound = new Sound('sounds/end-level-victory.wav');
 
 Bug.minCar = 2; //Min number of cars/row
-Bug.filenames = ['assets/green-52.png', //binary-80px
+Bug.filenames = ['','','assets/green-52.png', //binary-80px
   'assets/green-109.png', //binary-120px
   'assets/green-167.png', //binary-160px
   'assets/green-195.png', //binary-200px
   'assets/green-225.png', //binary-240px
   'assets/green-280.png']; //binary-280px
+Bug.ObsWidth = [40, 40, 52, 109, 167, 195, 225, 280];
 Bug.maxSeparation = [11, 11, 10, 10, 10, 8, 8, 8, 7, 7];
 Bug.minSeparation = [11, 11, 8, 6, 5, 4, 4, 4, 3, 3];
-Bug.maxObsLength = [5, 5, 6, 6, 6, 6, 6, 6, 6, 6];
+Bug.maxObsLength = [5, 5, 6, 6, 6, 6, 7, 7, 7, 7];
 Bug.minObsLength = [5, 4, 4, 3, 3, 3, 3, 2, 2, 2];
 Bug.maxVelocity = [3, 3, 4, 4, 5, 6, 7, 8, 9, 9];
 Bug.minVelocity = [1, 2, 2, 2, 3, 3, 3, 4, 5, 6];
@@ -74,6 +79,7 @@ Bug.prototype.moveBug = function(event) {
     this.yPos -= BOX_SIZE;
     this.image.src = 'assets/bug.png';
     Bug.ezUpCounter = 0;
+    Bug.bugSound.play();
   }
   if(event.keyCode === 38 && this.yPos === BOX_SIZE && ENDZONE_XPOS.includes(this.xPos) && !Bug.ezUpCounter) { //119
     //Bug moving up from beneath endzone and is in front of opening
@@ -87,30 +93,52 @@ Bug.prototype.moveBug = function(event) {
     this.image.src = 'assets/bug.png';
     Bug.fillEndzoneSlot(this.xPos);
     this.yPos = 0;
+    
   }
 
   if(event.keyCode === 37 && this.xPos > 0) { //97
     this.xPos -= BOX_SIZE;
     this.image.src = 'assets/bug_left.png';
     Bug.ezUpCounter = (ENDZONE_XPOS.includes(this.xPos) ? 1 : 0 );
+    Bug.bugSound.play();
   }
 
   if(event.keyCode === 39 && this.xPos < (canvas.width - this.width)){ //100
     this.xPos += BOX_SIZE;
     this.image.src = 'assets/bug_right.png';
     Bug.ezUpCounter = (ENDZONE_XPOS.includes(this.xPos) ? 1 : 0 );
+    Bug.bugSound.play();
   }
 
   if(event.keyCode === 40 && this.yPos < (canvas.height - BOX_SIZE)) { //115
     this.yPos += BOX_SIZE;
     this.image.src = 'assets/bug_down.png';
     Bug.ezUpCounter = 0;
+    Bug.bugSound.play();
   }
 
   if(this.yPos === 0) {
     Bug.winState();
   }
 };
+
+/**
+ * Sound Constructor
+ */
+function Sound(src) {
+  this.sound = document.createElement('audio');
+  this.sound.src = src;
+  this.sound.setAttribute('preload', 'auto');
+  this.sound.setAttribute('controls', 'none');
+  this.sound.style.display = 'none';
+  document.body.appendChild(this.sound);
+  this.play = function() {
+    this.sound.play();
+  };
+  this.stop = function() {
+    this.sound.pause();
+  };
+}
 
 
 /**
@@ -174,12 +202,13 @@ Obstacle.prototype.moveObstacle = function() {
  * @param {number} width - width in pixels
  * @param {number} xPos - starting x position
  * @param {number} velocity - rate that this object will move
+ * @param {string} file - path name of object image file
  */
-function Traincar(width, xPos, velocity) {
+function Traincar(width, xPos, velocity, file) {
   this.width = width;
   this.xPos = xPos;
   this.velocity = velocity;
-  this.filepath = Bug.filenames[this.width/BOX_SIZE - MIN_OBS_LENGTH];
+  this.filepath = file;
 }
 
 /**
@@ -233,7 +262,7 @@ Bug.buildObsTrain = function(movesRight) {
   var train = [];
   var v = Bug.randInRange(Bug.minVelocity[l], Bug.maxVelocity[l], false) * (movesRight ? 1 : -1);
   for (var k = 0; k < car.length; k++) {
-    train[k] = new Traincar(car[k]*BOX_SIZE, xPos, v);
+    train[k] = new Traincar(Bug.ObsWidth[car[k]], xPos, v, Bug.filenames[car[k]]);
     xPos += ((train[k].width + space[k]*BOX_SIZE) * (movesRight ? 1 : -1));
   }
   return train;
@@ -394,6 +423,7 @@ Bug.winState = function() {
   Bug.createFrame(); //Renders one more frame after game cease puts bug in endzone
 
   if (Bug.inEndZone === ENDZONE_SLOTS) { //Entered when level is complete
+    Bug.endLevelSound.play();
     Bug.displayScore();
     Bug.level++; //Increases Level
     Bug.inEndZone = 0; //Resets bugs in endzone
@@ -427,9 +457,13 @@ Bug.loseState = function() {
   if (Bug.bugLives.pop()) { // then we still have lives to play
     Bug.stopGame(); //Clear intervals
     Bug.createFrame();
+    if (Bug.clock === 0) { // died on timeout
+      Bug.startGameInitLevel = INIT_CONTINUE_AFTER_TIMEOUT;
+    } else {
+      Bug.startGameInitLevel = INIT_CONTINUE_LEVEL;
+    }
     Bug.clock = TIME_LIMIT; //Reset Clock
     console.log('loseState: ',Bug.bugLives.length,'Lives remaining');
-    Bug.startGameInitLevel = INIT_CONTINUE_LEVEL;
     window.setTimeout(Bug.startGame, 1000);
   } else { // out of lives. Game Over.
     Bug.gameOver = true;
@@ -445,6 +479,33 @@ Bug.loseState = function() {
       window.setTimeout(Bug.loadGameOverPage,2000);
     }
   }
+};
+
+Bug.timeoutSplashScreenMsg = function() {
+  var startY = 200;
+  //var lineHeight = 55;
+  Bug.createFrame();
+  ctx.font = '40px courier';
+  //ctx.clearRect(15, startY-5, 55, 590);
+  ctx.clearRect(15,155,625,75);
+  ctx.fillText('Your Bug ran out of time!',30, startY);
+  ctx.font = '30px Arial';
+  Bug.pauseGame();
+};
+
+Bug.startupSplashScreenMsg = function() {
+  var startY = 120;
+  var lineHeight = 55;
+  Bug.createFrame();
+  ctx.font = '40px courier';
+  ctx.clearRect(85, 125, 100, 100);
+  ctx.fillText('WELCOME TO BUGGER!',110, startY);
+  ctx.fillText('Arrow keys move Bug', 95, startY + lineHeight);
+  ctx.fillText('Spacebar pauses game', 80, startY + lineHeight*2);
+  ctx.fillText('Good Luck!', 200, startY + 25 +lineHeight*3);
+  ctx.font = '30px Arial';
+  Bug.pauseGame();
+  Bug.startGameSound.play();
 };
 
 /**
@@ -479,8 +540,8 @@ Bug.pauseGame = function(){
   if(!Bug.pause) {
     Bug.clockRate = window.clearInterval(Bug.clockRate);
     Bug.frameRateID = window.clearInterval(Bug.frameRateID);
-    ctx.clearRect(140, 370, 350, 60);
-    ctx.fillText("Press SPACE to continue", 150, 410);
+    ctx.clearRect(135, 375, 370, 50);
+    ctx.fillText('Press SPACE to continue', 150, 410);
     Bug.pause = true;
   } else {
     Bug.clockRate = window.setInterval(Bug.clockTime, 1000);
@@ -527,6 +588,14 @@ Bug.startGame = function() {
   Bug.clockRate = window.setInterval(Bug.clockTime, 1000); //Clock Interval Timer
   Bug.frameRateID = window.setInterval(Bug.renderGame, 33); //Render Frame Rate
 
+  switch (initFlag) {
+  case INIT_NEW_GAME:
+    Bug.startupSplashScreenMsg();
+    break;
+  case INIT_CONTINUE_AFTER_TIMEOUT:
+    Bug.timeoutSplashScreenMsg();
+    break;
+  }
 };
 
 Bug.keyDirect = function(event) {
