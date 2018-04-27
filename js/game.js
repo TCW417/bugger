@@ -447,6 +447,18 @@ Bug.loseState = function() {
   }
 };
 
+Bug.startupSplashScreenMsg = function() {
+  var startY = 120;
+  var lineHeight = 55;
+  ctx.font = '40px courier';
+  ctx.clearRect(85, 125, 100, 100);
+  ctx.fillText('WELCOME TO BUGGER!',110, startY);
+  ctx.fillText('Arrow keys move Bug', 95, startY + lineHeight);
+  ctx.fillText('Spacebar pauses game', 80, startY + lineHeight*2);
+  ctx.fillText('Good Luck!', 200, startY + 25 +lineHeight*3);
+  ctx.font = '30px Arial';
+};
+
 /**
  * END OF GAME BEHAVIORS
  */
@@ -527,6 +539,10 @@ Bug.startGame = function() {
   Bug.clockRate = window.setInterval(Bug.clockTime, 1000); //Clock Interval Timer
   Bug.frameRateID = window.setInterval(Bug.renderGame, 33); //Render Frame Rate
 
+  if (initFlag === INIT_NEW_GAME) {
+    Bug.pauseGame();
+    Bug.startupSplashScreenMsg();
+  }
 };
 
 Bug.keyDirect = function(event) {
