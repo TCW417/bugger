@@ -1,20 +1,21 @@
 'use strict';
 
 //Variables
-var BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
-var TIME_LIMIT = 15; //Amount of time allowed to play game
-var LIVES_REMAINING = 2; //Number of lives player gets before game over
-var INIT_CONTINUE_LEVEL = 0; //Died on level with lives remaining
-var INIT_NEW_GAME = 1; //Flag indicating start of new game
-var INIT_NEW_LEVEL = 2; //Flag indicating start of new level
-var DBG_DRAW_OBSTACLES = true; //set to false to disable obstacles
-var STARTING_LEVEL = 1; //set starting level. normally 1
+const BOX_SIZE = 40; //Dimesion of Grid Unit in px i.e. 40x40px
+const TIME_LIMIT = 15; //Amount of time allowed to play game
+const LIVES_REMAINING = 2; //Number of lives player gets before game over
+const INIT_CONTINUE_LEVEL = 0; //Died on level with lives remaining
+const INIT_NEW_GAME = 1; //Flag indicating start of new game
+const INIT_NEW_LEVEL = 2; //Flag indicating start of new level
+const DBG_DRAW_OBSTACLES = true; //set to false to disable obstacles
+const STARTING_LEVEL = 1; //set starting level. normally 1
+const MAX_LEVEL = 10; //max game level
+const MIN_OBS_LENGTH = 2; //minimum length of obstacles
 var canvas = document.getElementById('myCanvas'); //Canvas HTML location
 var ctx = canvas.getContext('2d'); //2 dimensional canvas rendering
 ctx.font = '30px Arial'; //Text size and Font
 ctx.fillStyle = '#00ff00'; //Text Color
 Bug.level = STARTING_LEVEL; //Holds current level in range [1-9]
-var MAX_LEVEL = 9;
 
 Bug.minCar = 2; //Min number of cars/row
 Bug.filenames = ['assets/green-52.png', //binary-80px
@@ -23,12 +24,12 @@ Bug.filenames = ['assets/green-52.png', //binary-80px
   'assets/green-195.png', //binary-200px
   'assets/green-225.png', //binary-240px
   'assets/green-280.png']; //binary-280px
-Bug.maxSeparation = [11, 11, 10, 8, 7, 7, 6, 6, 5, 5];
+Bug.maxSeparation = [11, 11, 10, 10, 10, 8, 8, 8, 7, 7];
 Bug.minSeparation = [11, 11, 8, 6, 5, 4, 4, 4, 3, 3];
 Bug.maxObsLength = [5, 5, 6, 6, 6, 6, 6, 6, 6, 6];
 Bug.minObsLength = [5, 4, 4, 3, 3, 3, 3, 2, 2, 2];
-Bug.maxVelocity = [3, 4, 6, 6, 6, 7, 7, 8, 9, 10];
-Bug.minVelocity = [1, 2, 2, 3, 3, 4, 4, 4, 5, 6];
+Bug.maxVelocity = [3, 3, 4, 4, 5, 6, 7, 8, 9, 9];
+Bug.minVelocity = [1, 2, 2, 2, 3, 3, 3, 4, 5, 6];
 
 var ENDZONE_SLOTS = 3; //slots in level endzone
 var ENDZONE_XPOS = [120, 320, 480];
@@ -178,7 +179,7 @@ function Traincar(width, xPos, velocity) {
   this.width = width;
   this.xPos = xPos;
   this.velocity = velocity;
-  this.filepath = Bug.filenames[this.width/BOX_SIZE - Bug.minCar];
+  this.filepath = Bug.filenames[this.width/BOX_SIZE - MIN_OBS_LENGTH];
 }
 
 /**
@@ -402,7 +403,7 @@ Bug.winState = function() {
   }
   if (Bug.level > MAX_LEVEL) { //Entered after you beat level 9
     console.log('winState: MAX LEVEL ACHIEVED!!!');
-    Bug.level = 9; //for now...
+    Bug.level = MAX_LEVEL; //for now...
     Bug.startGameInitLevel = INIT_NEW_LEVEL;
   }
 
