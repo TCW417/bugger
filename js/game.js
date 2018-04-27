@@ -17,7 +17,9 @@ var ctx = canvas.getContext('2d'); //2 dimensional canvas rendering
 ctx.font = '30px Arial'; //Text size and Font
 ctx.fillStyle = '#00ff00'; //Text Color
 Bug.level = STARTING_LEVEL; //Holds current level in range [1-9]
-
+Bug.startGameSound = new Sound('sounds/accomplishment.wav');
+Bug.bugSound = new Sound('sounds/movesound.wav');
+Bug.endLevelSound = new Sound('sounds/end-level-victory.wav');
 
 Bug.minCar = 2; //Min number of cars/row
 Bug.filenames = ['assets/green-52.png', //binary-80px
@@ -76,6 +78,7 @@ Bug.prototype.moveBug = function(event) {
     this.yPos -= BOX_SIZE;
     this.image.src = 'assets/bug.png';
     Bug.ezUpCounter = 0;
+    Bug.bugSound.play();
   }
   if(event.keyCode === 38 && this.yPos === BOX_SIZE && ENDZONE_XPOS.includes(this.xPos) && !Bug.ezUpCounter) { //119
     //Bug moving up from beneath endzone and is in front of opening
@@ -89,30 +92,52 @@ Bug.prototype.moveBug = function(event) {
     this.image.src = 'assets/bug.png';
     Bug.fillEndzoneSlot(this.xPos);
     this.yPos = 0;
+    
   }
 
   if(event.keyCode === 37 && this.xPos > 0) { //97
     this.xPos -= BOX_SIZE;
     this.image.src = 'assets/bug_left.png';
     Bug.ezUpCounter = (ENDZONE_XPOS.includes(this.xPos) ? 1 : 0 );
+    Bug.bugSound.play();
   }
 
   if(event.keyCode === 39 && this.xPos < (canvas.width - this.width)){ //100
     this.xPos += BOX_SIZE;
     this.image.src = 'assets/bug_right.png';
     Bug.ezUpCounter = (ENDZONE_XPOS.includes(this.xPos) ? 1 : 0 );
+    Bug.bugSound.play();
   }
 
   if(event.keyCode === 40 && this.yPos < (canvas.height - BOX_SIZE)) { //115
     this.yPos += BOX_SIZE;
     this.image.src = 'assets/bug_down.png';
     Bug.ezUpCounter = 0;
+    Bug.bugSound.play();
   }
 
   if(this.yPos === 0) {
     Bug.winState();
   }
 };
+
+/**
+ * Sound Constructor
+ */
+function Sound(src) {
+  this.sound = document.createElement('audio');
+  this.sound.src = src;
+  this.sound.setAttribute('preload', 'auto');
+  this.sound.setAttribute('controls', 'none');
+  this.sound.style.display = 'none';
+  document.body.appendChild(this.sound);
+  this.play = function() {
+    this.sound.play();
+  };
+  this.stop = function() {
+    this.sound.pause();
+  };
+}
 
 
 /**
@@ -396,6 +421,7 @@ Bug.winState = function() {
   Bug.createFrame(); //Renders one more frame after game cease puts bug in endzone
 
   if (Bug.inEndZone === ENDZONE_SLOTS) { //Entered when level is complete
+    Bug.endLevelSound.play();
     Bug.displayScore();
     Bug.level++; //Increases Level
     Bug.inEndZone = 0; //Resets bugs in endzone
@@ -477,6 +503,7 @@ Bug.startupSplashScreenMsg = function() {
   ctx.fillText('Good Luck!', 200, startY + 25 +lineHeight*3);
   ctx.font = '30px Arial';
   Bug.pauseGame();
+  Bug.startGameSound.play();
 };
 
 /**
