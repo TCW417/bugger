@@ -68,19 +68,19 @@ Bug.prototype.moveBug = function(event) {
   if(Bug.gameOver) return;
 
 
-  if(event.keyCode === 119 && this.yPos > BOX_SIZE) {
+  if(event.keyCode === 38 && this.yPos > BOX_SIZE) { //119
     //Bug is not in top row, go ahead an dmove it up
     this.yPos -= BOX_SIZE;
     this.image.src = 'assets/bug.png';
     Bug.ezUpCounter = 0;
   }
-  if(event.keyCode === 119 && this.yPos === BOX_SIZE && ENDZONE_XPOS.includes(this.xPos) && !Bug.ezUpCounter) {
+  if(event.keyCode === 38 && this.yPos === BOX_SIZE && ENDZONE_XPOS.includes(this.xPos) && !Bug.ezUpCounter) { //119
     //Bug moving up from beneath endzone and is in front of opening
     if (!Bug.ezSlotIsFilled(this.xPos)) {
       //Bug is in front of an open slot but hasn't moved into it
       Bug.ezUpCounter++;
     }
-  } else if (event.keyCode === 119 && Bug.ezUpCounter && !Bug.ezSlotIsFilled(this.xPos)) {
+  } else if (event.keyCode === 38 && Bug.ezUpCounter && !Bug.ezSlotIsFilled(this.xPos)) { //119
     //Bug moving up into open endzone slot.
     console.log('made it home!');
     this.image.src = 'assets/bug.png';
@@ -88,19 +88,19 @@ Bug.prototype.moveBug = function(event) {
     this.yPos = 0;
   }
 
-  if(event.keyCode === 97 && this.xPos > 0) {
+  if(event.keyCode === 37 && this.xPos > 0) { //97
     this.xPos -= BOX_SIZE;
     this.image.src = 'assets/bug_left.png';
     Bug.ezUpCounter = (ENDZONE_XPOS.includes(this.xPos) ? 1 : 0 );
   }
 
-  if(event.keyCode === 100 && this.xPos < (canvas.width - this.width)){
+  if(event.keyCode === 39 && this.xPos < (canvas.width - this.width)){ //100
     this.xPos += BOX_SIZE;
     this.image.src = 'assets/bug_right.png';
     Bug.ezUpCounter = (ENDZONE_XPOS.includes(this.xPos) ? 1 : 0 );
   }
 
-  if(event.keyCode === 115 && this.yPos < (canvas.height - BOX_SIZE)) {
+  if(event.keyCode === 40 && this.yPos < (canvas.height - BOX_SIZE)) { //115
     this.yPos += BOX_SIZE;
     this.image.src = 'assets/bug_down.png';
     Bug.ezUpCounter = 0;
@@ -452,7 +452,8 @@ Bug.loseState = function() {
 Bug.stopGame = function() {
   Bug.frameRateID = window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
   Bug.clockRate = window.clearInterval(Bug.clockRate); //Stop Timer
-  Bug.pressListener = window.removeEventListener('keypress', Bug.keyDirect);
+  Bug.pressListener = window.removeEventListener('keydown', Bug.keyDirect);
+
 };
 
 
@@ -521,13 +522,14 @@ Bug.startGame = function() {
   Bug.player = new Bug(); //Instantiate Bug Object
   Bug.renderGame(); //Create frame / Test for collisions
 
-  Bug.pressListener = window.addEventListener('keypress', Bug.keyDirect);
+  Bug.pressListener = window.addEventListener('keydown', Bug.keyDirect);
   Bug.clockRate = window.setInterval(Bug.clockTime, 1000); //Clock Interval Timer
   Bug.frameRateID = window.setInterval(Bug.renderGame, 33); //Render Frame Rate
 
 };
 
 Bug.keyDirect = function(event) {
+  event.preventDefault();
   if(event.keyCode === 32) {
     event.preventDefault();
     Bug.pauseGame();
