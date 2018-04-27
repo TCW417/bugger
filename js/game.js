@@ -380,7 +380,7 @@ Bug.winState = function() {
 
   if (Bug.inEndZone === ENDZONE_SLOTS) { //Entered when level is complete
     Bug.level++; //Increases Level
-    Bug.pauseGame();
+    // Bug.pauseGame();
     Bug.displayScore();
     Bug.inEndZone = 0; //Resets bugs in endzone
     Bug.ezBugs = []; //Resets array bugs in endzone
@@ -394,10 +394,17 @@ Bug.winState = function() {
   }
 
   // delay a bit then start next level
-  //window.setTimeout(function(){},2000);
-  Bug.startGame(Bug.startGameInitLevel);
+  window.setTimeout(Bug.startGame,2000);
+  // Bug.startGame(Bug.startGameInitLevel);
 };
 
+Bug.loadNewTopPage = function() {
+  Bugger.loadNewPage('newtop.html');
+};
+
+Bug.loadGameOverPage = function() {
+  Bugger.loadNewPage('gameover.html');
+};
 
 /**
  * This is where losing-specific things happen
@@ -405,11 +412,11 @@ Bug.winState = function() {
 Bug.loseState = function() {
   if (Bug.bugLives.pop()) { // then we still have lives to play
     Bug.stopGame(); //Clear intervals
-    
     Bug.createFrame();
     Bug.clock = TIME_LIMIT; //Reset Clock
     console.log('loseState: Lives remaining');
-    Bug.startGame(INIT_CONTINUE_LEVEL);
+    Bug.startGameInitLevel = INIT_CONTINUE_LEVEL;
+    window.setTimeout(Bug.startGame, 1000);
   } else { // out of lives. Game Over.
     Bug.gameOver = true;
     console.log('Lose State Triggered');
@@ -417,15 +424,14 @@ Bug.loseState = function() {
     Bug.createFrame();
     var score = Bug.displayScore();
     Bug.level = 1;
-    Bug.pauseGame();
+    // Bug.pauseGame();
     if (Bugger.scoreIsTopTen(score)) {
-      Bugger.loadNewPage('newtop.html');
+      window.setTimeout(Bug.loadNewTopPage,2000);
     } else {
-      Bugger.loadNewPage('gameover.html');
+      window.setTimeout(Bug.loadGameOverPage,2000);
     }
   }
 };
-
 
 /**
  * END OF GAME BEHAVIORS
@@ -433,7 +439,7 @@ Bug.loseState = function() {
 Bug.stopGame = function() {
   Bug.frameRateID = window.clearInterval(Bug.frameRateID); //Stop Screen Rendering
   Bug.clockRate = window.clearInterval(Bug.clockRate); //Stop Timer
-  // Bug.pressListener = window.removeEventListener('keypress', Bug.keyDirect);
+  Bug.pressListener = window.removeEventListener('keypress', Bug.keyDirect);
 };
 
 
@@ -471,7 +477,8 @@ Bug.pauseGame = function(){
 /**
  * LOGIC  - Runs on page load
  */
-Bug.startGame = function(initFlag) {
+Bug.startGame = function() {
+  var initFlag = Bug.startGameInitLevel;
   if (initFlag === INIT_NEW_LEVEL || initFlag === INIT_NEW_GAME) { //Happens on new game OR new level
     Bug.clock = TIME_LIMIT;
     Bug.gameOver = false;
@@ -517,5 +524,6 @@ Bug.keyDirect = function(event) {
 };
 
 window.onload = function() {
-  Bug.startGame(INIT_NEW_GAME);
+  Bug.startGameInitLevel = INIT_NEW_GAME;
+  Bug.startGame();
 };
