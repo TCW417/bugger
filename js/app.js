@@ -48,7 +48,7 @@ Bugger.sortObjArrayOnKey = function(objArray, keyName, accending) {
 // test score against top ten scores table
 Bugger.scoreIsTopTen = function(score) {
   Bugger.topScores = Bugger.restoreTopTenTableData();
-  return score >= Bugger.topScores[Bugger.topScores.length-1].score;
+  return score > Bugger.topScores[Bugger.topScores.length-1].score;
 };
 
 Bugger.loadNewPage = function(pageName){
