@@ -12,7 +12,7 @@ Bugger.restoreTopTenTableData = function() {
   [new Bugger.TopPlayer('Tom', 1000),
     new Bugger.TopPlayer('Mom', 500),
     new Bugger.TopPlayer('Allie', 0),
-    new Bugger.TopPlayer('Michele', 0),
+    new Bugger.TopPlayer('Michelle', 0),
     new Bugger.TopPlayer('Tracy', 500),
     new Bugger.TopPlayer('Andrew', 690),
     new Bugger.TopPlayer('Justin', 650),
