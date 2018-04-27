@@ -1,6 +1,5 @@
 
 h1, h2, h3, h4, label, button {
-
   font-family: 'Audiowide', cursive;
 }
 
@@ -14,11 +13,9 @@ h2 {
   line-height: 1.5em;
   border: 6px inset #ff00c1;
   color: #00fff9;
-  margin: 50px auto;
+  margin: auto;
   width: 900px;
-  /* margin-top: 60px; */
   font-size: 40px;
-  /* margin-bottom: 20px; */
 }
 
 h4 {
@@ -27,6 +24,7 @@ h4 {
   text-transform: uppercase;
   font-size: 40px;
 }
+
 .bio {
   display: inline-block;
   clear: both;
@@ -34,11 +32,8 @@ h4 {
   padding-bottom: 30px;
   width: 100%;
 }
+
 .bio img {
-  /* display: inline-block; */
-  /* vertical-align: top; */
-  /* width: auto; */
-  /* height: auto; */
   margin-right: 20px;
   margin-top: 30px;
   margin-bottom: 0;
@@ -47,14 +42,10 @@ h4 {
   max-height: 300px;
   max-width: 300px;
   border-radius: 6px;
-  /* margin: 25px 20px; */
-  /* z-index: 10; */
 }
 
 .bio p {
-  /* display: inline-block; */
   flex-wrap: wrap;
-
   color: rgb(30, 30, 180);
   margin-top: 30px;
   margin-bottom: 0;
@@ -69,6 +60,7 @@ h4 {
   height: 280px;
   overflow-y: auto;
 }
+
 body {
   width: 100%;
   font-size: 22px;
@@ -76,7 +68,6 @@ body {
   background-image: url('../assets/retrowave_background_by_hayny-dar38p1.png');
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  
 }
 
 header{
@@ -90,6 +81,7 @@ header div {
   text-align: center;
   margin: auto;
 }
+
 header div a {
   font-family: 'Press Start 2P', cursive;
   font-size: 60px;
@@ -106,16 +98,18 @@ h2#scoreheader {
 
 fieldset#newTop {
   display: block;
-  /* width: 20em; */
   margin: 0 auto;
   text-align: center;
 }
+
 fieldset#newTop label, fieldset#newTop button, fieldset#newTop input {
   font-size: 1.5em;
 }
+
 fieldset#newTop p {
   color: #00fff9;
 }
+
 fieldset#newTop button {
   margin: 20px auto;
   border: 4px solid black;
@@ -124,6 +118,7 @@ fieldset#newTop button {
   color: blue;
   margin-top: 65px;
 }
+
 fieldset#newTop input {
   background-color: #ff00c1;opacity: .9;
   color: blue;
@@ -131,18 +126,25 @@ fieldset#newTop input {
   border: 1px solid black;
   border-radius: 10px;
 }
+
 main {
   width: 90%;
+  min-height: 650px;
   margin: auto;
+  padding-bottom: 190px;
+  padding-top: 50px;
 }
+
 #urScore {
   color: #00fff9;
   height: 100px;
   font-size: 40px;
   text-align: center;
 }
+
 p#urScore {
   height: 50px;
+  margin: 50px 0 50px 0;
 }
 
 main div {
@@ -154,7 +156,6 @@ div.bio {
   display: inline-flex;
   flex-direction: column;
   flex-wrap: wrap;
-  /* margin: auto 0; */
 }
 
 ul#landing-menu {
@@ -176,10 +177,12 @@ ul#landing-menu button {
   border: 4px solid black;
   border-radius: 15px;
 }
+
 ul#landing-menu button:hover {
   background-color: #00fff9;
   text-shadow: 3px 3px 5px #ff00c1;
 }
+
 ul#landing-menu li a {
   text-decoration: none;
   color: black;
@@ -194,7 +197,6 @@ table {
 
 table tr {
   padding: 10px;
-
 }
 
 table tr td{
@@ -208,9 +210,10 @@ table tr td{
 
 #container {
   position: relative;
-  width: 65em;
+  width: 1250px;
   margin: auto;
 }
+
 #monitor {
   width: 1250px;
   margin: auto;
@@ -231,21 +234,19 @@ table tr td{
   border-radius: 10px;
 }
 
-/* p button {
-  margin-bottom: 
-} */
-
 footer {
-  /* vertical-align: bottom; */
-  display: block;
+  position: relative;
+  margin-top: -176px;
+  height: 176px;
+  clear: both;
   width: 100%;
-  height: 8em;
   background: linear-gradient( #9600ff, #00fff9);
   font-family: 'Audiowide', cursive;
 }
 
 footer ul {
   width: 100%;
+  bottom: 0;
   margin: auto;
   text-align: center;
 }
@@ -280,12 +281,10 @@ footer p {
   color: #00fff9;
   margin: auto;
   width: 700px;
-  margin-top: 60px;
 }
 
 #howToPlay p {
   width: 600px;
-
   color: blue;
   margin: auto;
   margin-top: 30px;

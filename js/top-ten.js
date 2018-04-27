@@ -10,7 +10,7 @@ TopTen.clearTopTenTable = function() {
 };
 
 TopTen.renderTopTenTable = function() {
-  TopTen.topScores =  Bugger.restoreTopTenTableData();
+  TopTen.topScores = Bugger.restoreTopTenTableData();
   var divEl = document.getElementById('scoreTableDiv');
   var tableEl = document.createElement('table');
   for (var s of TopTen.topScores) {
