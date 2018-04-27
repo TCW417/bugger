@@ -20,6 +20,10 @@ Bug.level = STARTING_LEVEL; //Holds current level in range [1-9]
 Bug.startGameSound = new Sound('sounds/accomplishment.wav');
 Bug.bugSound = new Sound('sounds/movesound.wav');
 Bug.endLevelSound = new Sound('sounds/end-level-victory.wav');
+Bug.collisionSound = new Sound('sounds/bugdeath.wav');
+Bug.ezSound = new Sound('sounds/jump01.wav');
+Bug.timeOutSound = new Sound('sounds/loseSound.wav');
+
 
 Bug.minCar = 2; //Min number of cars/row
 Bug.filenames = ['','','assets/green-52.png', //binary-80px
@@ -319,6 +323,7 @@ Bug.detectCollision = function() {
       var impactLeft = Bug.player.xPos >= Bug.allObstacles[bugRow][i].xPos && Bug.player.xPos <= Bug.allObstacles[bugRow][i].rightSide();
       var impactRight = Bug.player.rightSide() >= Bug.allObstacles[bugRow][i].xPos && Bug.player.rightSide() <= Bug.allObstacles[bugRow][i].rightSide();
       if (impactLeft||impactRight) {
+        Bug.collisionSound.play();
         return true;
       }
     }
@@ -418,6 +423,7 @@ Bug.winState = function() {
 
   Bug.clock = TIME_LIMIT; // Reset Timer
   Bug.inEndZone++; //Increment bugs in endzone
+  Bug.ezSound.play();
   Bug.startGameInitLevel = INIT_CONTINUE_LEVEL; //Causes ezBugs and obstacles to stay
   Bug.stopGame(); //Clears Intervals
   Bug.createFrame(); //Renders one more frame after game cease puts bug in endzone
@@ -458,6 +464,7 @@ Bug.loseState = function() {
     Bug.stopGame(); //Clear intervals
     Bug.createFrame();
     if (Bug.clock === 0) { // died on timeout
+      Bug.timeOutSound.play();
       Bug.startGameInitLevel = INIT_CONTINUE_AFTER_TIMEOUT;
     } else {
       Bug.startGameInitLevel = INIT_CONTINUE_LEVEL;
