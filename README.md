@@ -17,3 +17,5 @@
 - Color palette taken from/inspired by Color-Hex at http://www.color-hex.com/color-palette/57915
 
 - Macintosh computer image taken and adapted from https://news-cdn.softpedia.com/images/news2/Tell-Us-About-Your-First-Mac-Apple-Asks-for-Your-Feedback-420432-2.png
+
+- Task/bug tracking using Trello at https://trello.com/
